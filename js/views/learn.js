@@ -97,6 +97,6 @@ function summaryCard(u) {
     h('summary', null, icon('bolt'), h('h3', null, 'הכללים החשובים ביחידה'), icon('chevL', 'sum-chev')),
     h('ul', { class: 'facts' }, u.summary.map((f) => h('li', null,
       h('span', null, f.t),
-      f.refs && f.refs.length ? h('button', { class: 'fact-src', title: 'שאלות מקור', 'aria-label': 'הצגת שאלת מקור', onclick: () => openQuestion(f.refs[0], f.refs.filter((id) => D.byId.has(id))) }, `מקור: #${f.refs[0]}`) : null))),
+      f.refs && f.refs.length ? h('button', { class: 'fact-src', title: 'שאלות מקור', 'aria-label': 'הצגת שאלת מקור', onclick: () => openQuestion(f.refs[0], f.refs.filter((id) => D.byId.has(id))) }, `מקור: שאלה ${f.refs[0]}`) : null))),
     h('p', { class: 'fineprint muted' }, 'הסיכום נאסף מהשאלות והתשובות הרשמיות ביחידה זו. בכל ספק – התשובה הנכונה במאגר היא הקובעת.'));
 }

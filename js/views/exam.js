@@ -10,7 +10,8 @@ import { confetti } from '../fx.js';
 import { ringSvg } from '../charts.js';
 import { wrongItem } from './practice.js';
 
-const { questions: N, minutes: MIN, passScore: PASS } = APP.exam;
+const { questions: N, minutes: BASE_MIN, passScore: PASS } = APP.exam;
+const minutesFor = () => Math.round(BASE_MIN * (1 + (store.state.profile.examExtra || 0) / 100));
 
 /** Weighted sampling without replacement. */
 function weightedSample(ids, weightOf, n) {
@@ -36,8 +37,8 @@ function buildExam(kind) {
   ids = shuffle(ids);
   const orders = {};
   ids.forEach((id) => { orders[id] = makeOrder(D.byId.get(id), store.state.profile.shuffle); });
-  const start = Date.now();
-  return { kind, lic, start, deadline: start + MIN * 60000, ids, orders, picks: {}, marks: {}, i: 0 };
+  const start = Date.now(), mins = minutesFor();
+  return { kind, lic, start, mins, deadline: start + mins * 60000, ids, orders, picks: {}, marks: {}, i: 0 };
 }
 
 // ---------------------------------------------------------------------------------
@@ -50,7 +51,7 @@ export function examIntroView() {
     h('div', { class: 'page-head' }, h('h1', null, 'מבחן דמה'), h('p', { class: 'muted' }, 'בדיוק כמו במבחן הרשמי – בלי רמזים ובלי משוב עד הסוף')),
     h('div', { class: 'card exam-rules' },
       h('div', { class: 'rule' }, h('b', null, N), h('span', null, 'שאלות')),
-      h('div', { class: 'rule' }, h('b', null, MIN), h('span', null, 'דקות')),
+      h('div', { class: 'rule' }, h('b', null, minutesFor()), h('span', null, minutesFor() !== BASE_MIN ? `דקות (כולל תוספת זמן)` : 'דקות')),
       h('div', { class: 'rule rule-pass' }, h('b', null, PASS), h('span', null, `נכונות לפחות (עד ${N - PASS} טעויות)`))),
     h('div', { class: 'card lic-line' }, h('span', { class: 'lic-emoji' }, lic.icon), h('div', { class: 'grow' }, h('b', null, `סוג רישיון: ${lic.label} (${lic.short})`), h('div', { class: 'muted small' }, `השאלות נבחרות אקראית מתוך ${pool} שאלות רלוונטיות`)), h('a', { class: 'btn btn-ghost', href: '#/settings' }, 'שינוי')),
     active ? h('div', { class: 'card resume-card' },
@@ -158,7 +159,7 @@ export function examRunView() {
     finished = true; clearInterval(timer); document.removeEventListener('keydown', keyHandler);
     const qs = E.ids.map((id) => { const q = D.byId.get(id), p = E.picks[id]; return [id, p == null ? -1 : p, p === q.c ? 1 : 0]; });
     const correct = qs.reduce((s, x) => s + x[2], 0);
-    const secs = Math.min(MIN * 60, Math.round((Date.now() - E.start) / 1000));
+    const secs = Math.min((E.mins || BASE_MIN) * 60, Math.round((Date.now() - E.start) / 1000));
     const result = { ts: Date.now(), lic: E.lic, kind: E.kind, total: E.ids.length, correct, secs, passed: correct >= PASS, qs };
     qs.forEach(([id, p, ok]) => { if (p >= 0) store.recordAnswer(id, !!ok); });
     const idx = store.addExam(result);

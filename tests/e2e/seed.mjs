@@ -13,6 +13,6 @@ for (let id = 1; id <= 1800; id++) {
 }
 for (let i = 0; i < 26; i++) { if (i > 8 && rnd() < .4) continue; const n = Math.floor(5 + rnd() * 40); log[key(now - i * DAY)] = { n, r: Math.floor(n * .8), x: n * 9, ms: n * 18000 }; }
 const exams = [21, 23, 24, 22, 26, 27, 25, 28].map((c, i) => ({ ts: now - (9 - i) * 2 * DAY, lic: 'B', kind: 'full', total: 30, correct: c, secs: 1500 + i * 30, passed: c >= 26, qs: [] }));
-const state = { v: 1, created: now - 30 * DAY, profile: { name: 'נועה', lic: 'B', shuffle: true, tts: false, theme: 'auto', dailyGoal: 20, examDate: key(now + 12 * DAY), fontScale: 1 },
+const state = { v: 1, created: now - 30 * DAY, profile: { name: 'נועה', lic: 'B', shuffle: true, tts: false, theme: 'auto', dailyGoal: 20, examDate: key(now + 12 * DAY), fontScale: 1, onboarded: true },
   q, flags: [12, 55, 130], exams, log, xp: 1840, badges: { first: now, q100: now, streak3: now, exam1: now, examPass: now, combo10: now }, activeExam: null };
 console.log(JSON.stringify(state));

@@ -14,7 +14,7 @@ export const dayNum = (ts) => { const d = new Date(ts); return Math.round(Date.U
 export const defaultState = () => ({
   v: 1,
   created: Date.now(),
-  profile: { name: '', lic: 'B', shuffle: true, tts: false, theme: 'auto', dailyGoal: 20, examDate: '', fontScale: 1 },
+  profile: { name: '', lic: 'B', shuffle: true, tts: false, theme: 'auto', dailyGoal: 20, examDate: '', fontScale: 1, onboarded: false, examExtra: 0 },
   q: {},          // id -> { b: box, d: due day, r: right, w: wrong, l: last result 1/0, t: last ts }
   flags: [],      // bookmarked question ids
   exams: [],      // finished exam results

@@ -12,6 +12,7 @@ import { signsView } from './views/signs.js';
 import { statsView } from './views/stats.js';
 import { searchView } from './views/search.js';
 import { settingsView } from './views/settings.js';
+import { maybeOnboard } from './views/onboarding.js';
 
 const ROUTES = [
   ['/', homeView, 'home'],
@@ -89,7 +90,12 @@ async function boot() {
   window.addEventListener('hashchange', render);
   render();
   registerSW();
+  maybeOnboard(render);
 }
+
+// make sure the debounced save reaches storage when the tab is hidden/closed
+window.addEventListener('pagehide', () => store.flush());
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') store.flush(); });
 
 window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); window.__installPrompt = e; });
 

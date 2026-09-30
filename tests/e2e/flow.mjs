@@ -14,7 +14,10 @@ const step = (s) => console.log('•', s);
 const q = (id) => page.evaluate(async (id) => (await (await fetch('data/questions.json')).json()).find((x) => x.id === id), id);
 
 await page.goto('http://localhost:8123/index.html');
-await page.waitForSelector('#view .page');
+await page.waitForSelector('.sheet');
+await shot('00_onboarding');
+await page.click('.sheet .btn-primary');
+await page.waitForSelector('.sheet', { state: 'detached' });
 step('home'); await shot('01_home');
 
 // --- learn + unit
