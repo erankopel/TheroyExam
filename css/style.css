@@ -12,7 +12,7 @@
 :root {
   --fs: 1;
   --bg: #f3f5fb; --surface: #ffffff; --surface-2: #eef1f8; --surface-3: #e3e8f4;
-  --ink: #141b2d; --ink-2: #4a5470; --ink-3: #79839c; --line: #dde3ef;
+  --ink: #141b2d; --ink-2: #4a5470; --ink-3: #6a7590; --line: #dde3ef;
   --brand: #2456e6; --brand-2: #1d44b8; --brand-soft: #e4ebff; --on-brand: #fff;
   --accent: #ffc21a;
   --good: #109b66; --good-soft: #dcf5ea; --good-ink: #0a6b46;
@@ -88,7 +88,7 @@ a.card:hover, button.card:hover { border-color: color-mix(in srgb, var(--brand) 
 .statusbar { display: flex; height: 8px; border-radius: 99px; overflow: hidden; background: var(--surface-3); gap: 2px; margin: 8px 0 4px; }
 .statusbar .seg { display: block; min-width: 4px; } .seg-strong { background: var(--good); } .seg-learning { background: #7bd3ab; } .seg-weak { background: var(--bad); } .seg-new { background: transparent; }
 .seg-ctl { display: inline-flex; background: var(--surface-2); border-radius: 12px; padding: 3px; gap: 2px; max-width: 100%; overflow-x: auto; }
-.seg-ctl button { border: 0; background: transparent; padding: 7px 14px; border-radius: 9px; font-weight: 600; font-size: .88rem; color: var(--ink-2); white-space: nowrap; }
+.seg-ctl button { border: 0; background: transparent; min-height: 38px; padding: 7px 14px; border-radius: 9px; font-weight: 600; font-size: .88rem; color: var(--ink-2); white-space: nowrap; }
 .seg-ctl button.on { background: var(--surface); color: var(--brand); box-shadow: 0 1px 4px rgba(0, 0, 0, .12); }
 .grid { display: grid; gap: 12px; } .grid-2 { grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr)); } .grid-4 { grid-template-columns: repeat(2, 1fr); }
 @media (min-width: 720px) { .grid-4 { grid-template-columns: repeat(4, 1fr); } }

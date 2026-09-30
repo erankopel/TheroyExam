@@ -70,9 +70,12 @@ function render() {
   document.body.dataset.route = m.r.tab;
   document.querySelectorAll('[data-tab]').forEach((a) => a.classList.toggle('active', a.dataset.tab === m.r.tab));
   document.querySelectorAll('[data-tab]').forEach((a) => (a.dataset.tab === m.r.tab ? a.setAttribute('aria-current', 'page') : a.removeAttribute('aria-current')));
-  if (path !== lastPath) window.scrollTo({ top: 0 });
+  const changed = path !== lastPath;
+  if (changed) window.scrollTo({ top: 0 });
   lastPath = path;
-  document.title = path === '/' ? `${APP.name} – ${APP.tagline}` : `${APP.name}`;
+  const T = { learn: 'לימוד', exam: 'מבחן דמה', review: 'חזרה', signs: 'מילון תמרורים', stats: 'התקדמות', search: 'חיפוש', settings: 'הגדרות' };
+  document.title = T[m.r.tab] ? `${T[m.r.tab]} · ${APP.name}` : `${APP.name} – ${APP.tagline}`;
+  if (changed && !m.r.focus) viewEl.focus({ preventScroll: true });
 }
 
 async function boot() {
