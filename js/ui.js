@@ -101,7 +101,7 @@ export function toast(msg, { tone = 'info', ms = 2600, icon: ic } = {}) {
 const openSheets = []; // stack of { close } – the last one is the top-most
 export function closeAllSheets() { [...openSheets].forEach((s) => s.close(true)); }
 
-export function sheet(build, { title = '', onClose } = {}) {
+export function sheet(build, { title = '', label = '', onClose } = {}) {
   const host = document.getElementById('overlay');
   const opener = document.activeElement;
   let closed = false;
@@ -126,8 +126,8 @@ export function sheet(build, { title = '', onClose } = {}) {
     }
   };
   const body = h('div', { class: 'sheet-body' });
-  const panel = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': title || 'חלון', tabindex: '-1' },
-    h('div', { class: 'sheet-head' }, h('h3', null, title), h('button', { class: 'btn btn-icon btn-ghost', 'aria-label': 'סגירה', onclick: close }, icon('x'))),
+  const panel = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': title || label || 'חלון', tabindex: '-1' },
+    h('div', { class: 'sheet-head' }, title ? h('h2', { class: 'sub', style: { margin: 0 } }, title) : h('span'), h('button', { class: 'btn btn-icon btn-ghost', 'aria-label': 'סגירה', onclick: close }, icon('x'))),
     body);
   const back = h('div', { class: 'sheet-back', onclick: (e) => { if (e.target === back) close(); } }, panel);
   host.append(back);
@@ -179,3 +179,18 @@ export function plural(n, one, many, two) {
 
 /** Hebrew counted noun: countHe(1,'שאלה אחת','שתי שאלות','שאלות') -> 'שאלה אחת'; 2 -> 'שתי שאלות'; 7 -> '7 שאלות'. */
 export function countHe(n, one, two, many) { return n === 1 ? one : n === 2 ? two : `${n} ${many}`; }
+
+/** Say something to screen-reader users (persistent live region; cleared first so repeated texts are announced again). */
+export function announce(text) {
+  const el = document.getElementById('sr-live'); if (!el) return;
+  el.textContent = '';
+  setTimeout(() => { el.textContent = text; }, 40);
+}
+
+/** Rebuild a group of controls (tabs, filters) without dropping keyboard focus: the same-index control is refocused. */
+export function keepFocus(container, rebuild) {
+  const sel = 'button, a';
+  const idx = [...container.querySelectorAll(sel)].indexOf(document.activeElement);
+  rebuild();
+  if (idx >= 0) { const n = container.querySelectorAll(sel)[idx]; if (n) n.focus({ preventScroll: true }); }
+}

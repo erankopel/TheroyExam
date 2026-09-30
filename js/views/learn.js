@@ -1,5 +1,5 @@
 // Learning hub: units by category + unit detail page.
-import { h, icon, fmtNum, clear } from '../ui.js';
+import { h, icon, fmtNum, clear, keepFocus } from '../ui.js';
 import { D, unitIdsForLic, unitsForLic, unitIcon } from '../data.js';
 import { store, go } from '../ctx.js';
 import { CATS, CAT_ORDER } from '../config.js';
@@ -17,9 +17,9 @@ export function unitIconEl(u, cls = '') {
 export function learnView({ cat } = {}) {
   const lic = licOf();
   const active = CAT_ORDER.includes(cat) ? cat : 'law';
-  const tabs = h('div', { class: 'cat-tabs', role: 'tablist' }, CAT_ORDER.map((c) => {
+  const tabs = h('nav', { class: 'cat-tabs', 'aria-label': 'נושאי לימוד' }, CAT_ORDER.map((c) => {
     const cc = catCounts(c);
-    return h('a', { role: 'tab', 'aria-selected': String(c === active), class: `cat-tab ${c === active ? 'on' : ''}`, href: `#/learn/${c}`, style: { '--cc': CATS[c].color } },
+    return h('a', { 'aria-current': c === active ? 'page' : null, class: `cat-tab ${c === active ? 'on' : ''}`, href: `#/learn/${c}`, style: { '--cc': CATS[c].color } },
       h('span', { class: 'ct-e' }, CATS[c].emoji), h('span', { class: 'ct-t' }, CATS[c].short), h('small', null, `${cc.strong}/${cc.total}`));
   }));
   const units = unitsForLic(lic, active);
@@ -42,7 +42,7 @@ function unitCard(u, n) {
       h('div', { class: 'uc-title' }, h('span', { class: 'uc-n' }, n), h('b', null, u.title), done ? h('span', { class: 'uc-done', 'aria-label': 'הושלמה' }, icon('check')) : null),
       h('small', { class: 'muted uc-blurb' }, u.blurb),
       statusBar(c, c.total),
-      h('div', { class: 'uc-meta' }, h('small', null, `${c.total} שאלות`), c.weak ? h('small', { class: 'tag-weak' }, `${c.weak === 1 ? 'טעות אחת' : `${c.weak} טעויות`}`) : c.due ? h('small', { class: 'tag-due' }, `${c.due} לחזרה מרווחת`) : c.new ? h('small', { class: 'muted' }, `${c.new} חדשות`) : null)));
+      h('div', { class: 'uc-meta' }, h('small', null, `${c.total} שאלות`), c.weak ? h('small', { class: 'tag-weak' }, `${c.weak === 1 ? 'טעות אחת' : `${c.weak} טעויות`}`) : c.due ? h('small', { class: 'tag-due' }, `${c.due} לחזרה מרווחת`) : c.new ? h('small', { class: 'muted' }, c.new === 1 ? 'שאלה חדשה אחת' : `${c.new} חדשות`) : null)));
 }
 
 // ---------------------------------------------------------------------------------
@@ -57,7 +57,8 @@ export function unitView({ key }) {
   const nextU = siblings[idx + 1];
   let filter = 'all';
   const list = h('div', { class: 'qlist' }), ftabs = h('div', { class: 'seg-ctl' });
-  const paintList = () => {
+  const paintList = () => keepFocus(ftabs, paintListInner);
+  const paintListInner = () => {
     clear(list); clear(ftabs);
     const f = { all: () => true, weak: (id) => store.statusOf(id) === 'weak', new: (id) => store.statusOf(id) === 'new' };
     [['all', `הכל (${ids.length})`], ['weak', `טעויות (${c.weak})`], ['new', `חדשות (${c.new})`]].forEach(([k, t]) =>
@@ -84,7 +85,7 @@ export function unitView({ key }) {
       c.weak ? h('button', { class: 'btn btn-lg btn-ghost', onclick: () => startPractice({ title: `טעויות – ${u.title}`, ids: ids.filter((id) => store.statusOf(id) === 'weak'), mode: 'random', back: `/unit/${key}`, kind: 'mistakes' }) }, icon('refresh'), 'תיקון טעויות') : null,
       signs ? h('a', { class: 'btn btn-lg btn-ghost', href: `#/signs/${key}` }, icon('cards'), 'מילון התמרורים') : null),
     summaryCard(u),
-    h('div', { class: 'card' }, h('div', { class: 'section-head tight' }, h('h3', null, 'כל השאלות ביחידה'), ftabs), list),
+    h('div', { class: 'card' }, h('div', { class: 'section-head tight' }, h('h2', { class: 'sub' }, 'כל השאלות ביחידה'), ftabs), list),
     nextU ? h('a', { class: 'card next-unit', href: `#/unit/${nextU.key}` }, h('span', { class: 'muted small' }, 'היחידה הבאה'), h('b', null, nextU.title), icon('chevL')) : null);
   return { el };
 }
@@ -94,7 +95,7 @@ const stat = (k, v, l) => h('div', { class: `st st-${k}` }, h('span', { class: `
 function summaryCard(u) {
   if (!u.summary || !u.summary.length) return null;
   return h('details', { class: 'card summary-card', open: true },
-    h('summary', null, icon('bolt'), h('h3', null, 'הכללים החשובים ביחידה'), icon('chevL', 'sum-chev')),
+    h('summary', null, icon('bolt'), h('h2', { class: 'sub' }, 'הכללים החשובים ביחידה'), icon('chevL', 'sum-chev')),
     h('ul', { class: 'facts' }, u.summary.map((f) => h('li', null,
       h('span', null, f.t),
       f.refs && f.refs.length ? h('button', { class: 'fact-src', title: 'שאלות מקור', 'aria-label': 'הצגת שאלת מקור', onclick: () => openQuestion(f.refs[0], f.refs.filter((id) => D.byId.has(id))) }, `מקור: שאלה ${f.refs[0]}`) : null))),

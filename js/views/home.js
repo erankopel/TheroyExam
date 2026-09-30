@@ -70,7 +70,7 @@ export function homeView() {
     h('div', { class: 'grid grid-2' },
       h('div', { class: 'card today' },
         ringSvg(Math.min(1, today.n / goal), { size: 84, stroke: 9, label: `${today.n}`, sub: `מתוך ${goal}`, tone: today.n >= goal ? 'good' : 'brand' }),
-        h('div', null, h('b', null, today.n >= goal ? 'יעד היום הושג! 🎉' : 'יעד יומי'), h('p', { class: 'muted small' }, today.n >= goal ? 'כל שאלה נוספת היא בונוס.' : `עוד ${goal - today.n} שאלות להשלמת היעד`),
+        h('div', null, h('b', null, today.n >= goal ? 'יעד היום הושג! 🎉' : 'יעד יומי'), h('p', { class: 'muted small' }, today.n >= goal ? 'כל שאלה נוספת היא בונוס.' : `עוד ${countHe(goal - today.n, 'שאלה אחת', 'שתי שאלות', 'שאלות')} להשלמת היעד`),
           h('p', { class: 'muted small' }, `יום נספר אחרי ${APP.streakMinAnswers} שאלות`))),
       h('button', { class: 'card cta', onclick: () => nu ? go(`/unit/${nu.key}`) : smartAll() },
         h('span', { class: 'cta-ic' }, nu ? h('img', { src: unitIcon(nu), alt: '', onerror: (e) => { e.target.replaceWith(h('span', null, nu.emoji || '📘')); } }) : icon('trophy')),
@@ -82,7 +82,7 @@ export function homeView() {
       tile('bolt', 'תרגול חכם', '15 שאלות לפי מה שצריך', 'var(--brand)', smartAll),
       tile('refresh', 'חזרה מרווחת', dueIds.length ? (dueIds.length === 1 ? 'שאלה אחת מחכה' : `${countHe(dueIds.length, '', 'שתי שאלות', 'שאלות')} מחכות`) : 'הכל מעודכן', 'var(--c-vehicle)', () => dueIds.length ? startPractice({ title: 'חזרה מרווחת', ids: dueIds, mode: 'smart', limit: 20, back: '/', kind: 'due' }) : go('/review')),
       tile('x', 'טעויות', weakIds.length ? `${weakIds.length} לתיקון` : 'אין טעויות פתוחות', 'var(--c-safety)', () => weakIds.length ? startPractice({ title: 'תיקון טעויות', ids: weakIds, mode: 'random', limit: 20, back: '/', kind: 'mistakes' }) : go('/review')),
-      tile('exam', 'מבחן דמה', `${APP.exam.questions} שאלות · ${APP.exam.minutes} דק׳`, 'var(--c-signs)', () => go('/exam'))),
+      tile('exam', 'מבחן דמה', `${APP.exam.questions} שאלות · ${Math.round(APP.exam.minutes * (1 + (p.examExtra || 0) / 100))} דק׳`, 'var(--c-signs)', () => go('/exam'))),
 
     offlineCard,
 
@@ -97,14 +97,14 @@ export function homeView() {
         icon('chevL'));
     })),
 
-    weakUnits.length ? h('div', { class: 'card' }, h('h3', null, 'כדאי לחזק'),
+    weakUnits.length ? h('div', { class: 'card' }, h('h2', { class: 'sub' }, 'כדאי לחזק'),
       h('div', { class: 'weak-list' }, weakUnits.map(({ u, a }) => h('a', { class: 'weak-row', href: `#/unit/${u.key}` },
         h('span', { class: 'grow' }, u.title), h('span', { class: 'chip tone-bad' }, `${Math.round(a.acc * 100)}% הצלחה`), icon('chevL'))))) : null,
 
-    earned.length ? h('div', { class: 'card' }, h('div', { class: 'section-head tight' }, h('h3', null, 'תגים אחרונים'), h('a', { class: 'link', href: '#/stats' }, 'הכל')),
-      h('div', { class: 'badge-row' }, earned.map((b) => h('div', { class: 'badge', title: b.desc }, h('span', { class: 'badge-e' }, b.emoji), h('small', null, b.name))))) : null,
+    earned.length ? h('div', { class: 'card' }, h('div', { class: 'section-head tight' }, h('h2', { class: 'sub' }, 'תגים אחרונים'), h('a', { class: 'link', href: '#/stats' }, 'הכל')),
+      h('div', { class: 'badge-row', tabindex: '0', role: 'group', 'aria-label': 'תגים אחרונים' }, earned.map((b) => h('div', { class: 'badge', title: b.desc }, h('span', { class: 'badge-e' }, b.emoji), h('small', null, b.name))))) : null,
 
-    h('p', { class: 'fineprint muted center' }, 'שאלות ותשובות: ', h('a', { href: APP.sourceUrl, target: '_blank', rel: 'noopener' }, APP.sourceNote), '. האפליקציה אינה רשמית ואינה מחליפה את המאגר הרשמי.'));
+    h('p', { class: 'fineprint muted center' }, 'מקור: ', h('a', { href: APP.sourceUrl, target: '_blank', rel: 'noopener' }, APP.sourceNote), '. האפליקציה אינה רשמית ואינה מחליפה את המאגר הרשמי.'));
 
   return { el };
 }
@@ -114,7 +114,7 @@ function planLine(remaining, daysLeft) {
   if (!remaining || daysLeft <= 0) return null;
   const perDay = Math.ceil(remaining / daysLeft);
   if (perDay > 60) return h('div', { class: 'muted small' }, 'הזמן קצר לכל החומר – כדאי להתמקד בטעויות, בנושאים החלשים ובמבחני דמה');
-  return h('div', { class: 'muted small' }, `כ־${perDay} שאלות חדשות ביום, בנוסף לחזרות`);
+  return h('div', { class: 'muted small' }, perDay === 1 ? 'שאלה חדשה אחת ביום, בנוסף לחזרות' : `כ־${perDay} שאלות חדשות ביום, בנוסף לחזרות`);
 }
 
 function tile(ic, title, sub, color, onclick) {

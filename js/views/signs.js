@@ -1,5 +1,5 @@
 // Sign dictionary: every road sign / marking that appears in the bank with its official meaning. Study mode hides the meaning.
-import { h, icon, clear, shuffle } from '../ui.js';
+import { h, icon, clear, shuffle, keepFocus } from '../ui.js';
 import { D, imgUrl } from '../data.js';
 import { store } from '../ctx.js';
 import { CATS } from '../config.js';
@@ -25,25 +25,26 @@ export function signsView({ key } = {}) {
   const inUnits = units.filter((u) => items.some((i) => i.unit === u.key));
   let unitKey = inUnits.some((u) => u.key === key) ? key : 'all';
   let text = '';
-  const grid = h('div', { class: 'sign-grid' }), chips = h('div', { class: 'chip-scroll', role: 'tablist' });
+  const grid = h('div', { class: 'sign-grid' }), chips = h('div', { class: 'chip-scroll', role: 'group', 'aria-label': 'סינון' });
   const info = h('p', { class: 'muted small' });
 
-  function paint() {
+  function paint() { keepFocus(chips, paintInner); }
+  function paintInner() {
     clear(grid); clear(chips);
     chips.append(chip('all', 'הכל', items.length), ...inUnits.map((u) => chip(u.key, u.title, items.filter((i) => i.unit === u.key).length)));
     const t = text.trim();
     const shown = items.filter((i) => (unitKey === 'all' || i.unit === unitKey) && (!t || i.q.a[i.q.c].includes(t) || String(i.q.id) === t));
-    info.textContent = `${shown.length} תמרורים וסימונים`;
+    info.textContent = shown.length === 1 ? 'תמרור אחד' : `${shown.length} תמרורים וסימונים`;
     shown.forEach((i) => grid.append(card(i, shown)));
     if (!shown.length) grid.append(h('p', { class: 'muted center' }, 'לא נמצאו תמרורים'));
   }
-  const chip = (k, t, n) => h('button', { role: 'tab', 'aria-selected': String(unitKey === k), class: `chip-btn ${unitKey === k ? 'on' : ''}`, onclick: () => { unitKey = k; paint(); } }, t, h('small', null, n));
+  const chip = (k, t, n) => h('button', { 'aria-pressed': String(unitKey === k), class: `chip-btn ${unitKey === k ? 'on' : ''}`, onclick: () => { unitKey = k; paint(); } }, t, h('small', null, n));
 
   function card(it, all) {
     const q = it.q, meaning = q.a[q.c];
     const meaningEl = h('span', { class: 'sc-meaning' }, meaning);
     const c = h('button', { class: `sign-card ${quizMode ? 'hidden' : ''}`, 'aria-label': quizMode ? 'לחצו לחשיפת המשמעות' : meaning,
-      onclick: () => { if (quizMode && c.classList.contains('hidden')) { c.classList.remove('hidden'); } else openQuestion(q.id, all.map((x) => x.q.id)); } },
+      onclick: () => { if (quizMode && c.classList.contains('hidden')) { c.classList.remove('hidden'); c.setAttribute('aria-label', `${meaning}. לחצו לפרטים`); c.querySelector('img').alt = `תמרור: ${meaning}`; } else openQuestion(q.id, all.map((x) => x.q.id)); } },
       h('img', { src: imgUrl(q), alt: quizMode ? 'תמרור' : `תמרור: ${meaning}`, loading: 'lazy', decoding: 'async' }), meaningEl,
       h('span', { class: 'sc-reveal' }, icon('eye'), 'מה המשמעות?'));
     return c;

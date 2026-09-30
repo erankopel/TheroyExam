@@ -1,5 +1,5 @@
 // Practice runner: one question at a time with instant feedback + end-of-round summary.
-import { h, icon, clear, fmtDuration, confirmDialog } from '../ui.js';
+import { h, icon, clear, fmtDuration, confirmDialog, announce } from '../ui.js';
 import { D } from '../data.js';
 import { store, go } from '../ctx.js';
 import { session, startPractice, restart } from '../session.js';
@@ -10,7 +10,7 @@ import { CATS } from '../config.js';
 import { ringSvg } from '../charts.js';
 
 const PRAISE = ['נכון!', 'מצוין!', 'יפה מאוד!', 'בדיוק!', 'כל הכבוד!', 'ידע מעולה!'];
-const OOPS = ['לא בדיוק', 'כמעט', 'עוד נחזור לזה', 'טעות שווה ללמוד ממנה'];
+const OOPS = ['לא בדיוק', 'לא נורא', 'עוד נחזור לזה', 'טעות שווה ללמוד ממנה'];
 
 export function practiceView() {
   const S = session.current;
@@ -24,11 +24,11 @@ export function practiceView() {
   const count = h('span', { class: 'session-count' });
   const top = h('header', { class: 'session-top' },
     h('button', { class: 'btn btn-icon btn-ghost', 'aria-label': 'יציאה', onclick: exit }, icon('x')),
-    h('div', { class: 'session-bar', role: 'progressbar', 'aria-valuemin': 0 }, bar),
+    h('div', { class: 'session-bar', role: 'progressbar', 'aria-label': 'התקדמות בסבב', 'aria-valuemin': 0 }, bar),
     count);
   const body = h('div', { class: 'session-body' });
   const foot = h('footer', { class: 'session-foot' });
-  root.append(top, body, foot);
+  root.append(h('h1', { class: 'sr-only' }, 'תרגול'), top, body, foot);
 
   async function exit() {
     if (S.results.length && !S.done) {
@@ -46,6 +46,7 @@ export function practiceView() {
     clear(body); clear(foot); foot.className = 'session-foot';
     const total = S.queue.length;
     count.textContent = `${S.i + 1}/${total}`;
+    top.querySelector('.session-bar').setAttribute('aria-valuetext', `שאלה ${S.i + 1} מתוך ${total}`);
     bar.style.width = `${(S.i / total) * 100}%`;
     top.querySelector('.session-bar').setAttribute('aria-valuenow', S.i); top.querySelector('.session-bar').setAttribute('aria-valuemax', total);
     card = questionCard(q, {
@@ -53,10 +54,11 @@ export function practiceView() {
       onFlag: () => store.toggleFlag(id),
       onPick: (oi) => pick(q, oi),
     });
-    if (S.retried.has(id) && S.results.some((r) => r.id === id)) body.append(h('div', { class: 'retry-note' }, icon('refresh'), 'חזרה על שאלה שנפלה'));
+    if (S.retried.has(id) && S.results.some((r) => r.id === id)) body.append(h('div', { class: 'retry-note' }, icon('refresh'), 'חזרה על שאלה שטעיתם בה'));
     body.append(card.el);
-    foot.append(h('div', { class: 'foot-hint' }, 'בחרו תשובה  ·  מקשים 1–4'));
+    foot.append(h('div', { class: 'foot-hint' }, 'בחרו תשובה  ·  מקשים 1-4'));
     window.scrollTo({ top: 0 });
+    const stem = card.el.querySelector('.stem'); if (stem) { stem.tabIndex = -1; stem.focus({ preventScroll: true }); } // read the new question first
     if (store.state.profile.tts && card) speakQuestion(q, order);
   }
 
@@ -70,10 +72,11 @@ export function practiceView() {
     if (!ok && !S.retried.has(q.id)) { S.queue.push(q.id); S.retried.add(q.id); }
     checkBadges(store, { combo: S.bestCombo, units: S.i % 5 === 4 });
     if (navigator.vibrate && !ok) navigator.vibrate(60);
+    announce(ok ? 'נכון' : `לא נכון. התשובה הנכונה: ${q.a[q.c]}`);
     const last = S.i + 1 >= S.queue.length;
     clear(foot); foot.className = `session-foot fb ${ok ? 'fb-good' : 'fb-bad'}`;
     foot.append(
-      h('div', { class: 'fb-msg', role: 'status' },
+      h('div', { class: 'fb-msg' },
         h('span', { class: 'fb-ic' }, icon(ok ? 'check' : 'x')),
         h('div', null,
           h('strong', null, ok ? PRAISE[S.results.length % PRAISE.length] : OOPS[S.results.length % OOPS.length]),
@@ -105,7 +108,7 @@ export function practiceView() {
     const p = uniq.length ? uRight / uniq.length : 0;
     const wrongIds = uniq.filter((r) => !r.ok).map((r) => r.id);
     if (p >= 0.8) confetti(1);
-    const msg = p === 1 ? 'סבב מושלם!' : p >= 0.8 ? 'סבב מצוין!' : p >= 0.6 ? 'התקדמות יפה' : 'כל סבב מקרב אותנו';
+    const msg = p === 1 ? 'סבב מושלם!' : p >= 0.8 ? 'סבב מצוין!' : p >= 0.6 ? 'התקדמות יפה' : 'כל סבב מקרב אתכם למבחן';
     body.append(
       h('div', { class: 'summary card' },
         h('div', { class: 'summary-ring' }, ringSvg(p, { size: 132, stroke: 12, label: `${Math.round(p * 100)}%`, sub: 'נכון בניסיון ראשון', tone: p >= 0.8 ? 'good' : p >= 0.6 ? 'warn' : 'bad' })),
@@ -115,7 +118,7 @@ export function practiceView() {
           stat(h('bdi', { dir: 'ltr' }, `+${S.xp}`), 'נקודות'),
           stat(fmtDuration((Date.now() - S.startedAt) / 1000), 'זמן')),
         wrongIds.length ? h('div', { class: 'wrong-list' },
-          h('h3', null, wrongIds.length === 1 ? 'שאלה אחת לחזרה' : `${wrongIds.length} שאלות לחזרה`),
+          h('h2', { class: 'sub' }, wrongIds.length === 1 ? 'שאלה אחת לחזרה' : `${wrongIds.length} שאלות לחזרה`),
           ...wrongIds.map((id) => wrongItem(D.byId.get(id), first.get(id).pick))) : h('p', { class: 'muted' }, 'אין טעויות בסבב הזה 🎉')));
     body.append(h('div', { class: 'summary-actions' },
       S.kind !== 'mistakes' ? h('button', { class: 'btn btn-lg btn-primary', onclick: () => restart() }, 'סבב נוסף', icon('next')) : null,

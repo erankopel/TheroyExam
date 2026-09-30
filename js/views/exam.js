@@ -1,5 +1,5 @@
 // Mock theory exam: intro, run (timer, navigation, flagging) and result review.
-import { h, icon, clear, sheet, confirmDialog, fmtTime, fmtDuration, shuffle, toast, countHe, fmtNum } from '../ui.js';
+import { h, icon, clear, sheet, confirmDialog, fmtTime, fmtDuration, shuffle, toast, countHe, fmtNum, keepFocus } from '../ui.js';
 import { D, idsForLic } from '../data.js';
 import { store, go } from '../ctx.js';
 import { APP, LICENSES, CATS, CAT_ORDER } from '../config.js';
@@ -57,14 +57,14 @@ export function examIntroView() {
     active ? h('div', { class: 'card resume-card' },
       h('div', null, h('b', null, 'יש מבחן פתוח'), h('div', { class: 'muted small' }, `נענו ${Object.keys(active.picks).length} מתוך ${active.ids.length}`)),
       h('div', { class: 'row gap' },
-        h('button', { class: 'btn btn-ghost', onclick: async () => { if (await confirmDialog({ title: 'לבטל את המבחן הפתוח?', text: 'המבחן לא יישמר בהיסטוריה.', ok: 'ביטול המבחן', danger: true })) { store.setActiveExam(null); go('/exam'); } } }, 'ביטול'),
+        h('button', { class: 'btn btn-ghost', onclick: async () => { if (await confirmDialog({ title: 'לבטל את המבחן הפתוח?', text: 'המבחן לא יישמר בהיסטוריה.', ok: 'כן, לבטל', cancel: 'חזרה', danger: true })) { store.setActiveExam(null); go('/exam'); } } }, 'ביטול המבחן'),
         h('button', { class: 'btn btn-primary', onclick: () => go('/exam/run') }, 'המשך מבחן', icon('next')))) : null,
     h('div', { class: 'grid grid-2' },
       h('button', { class: 'card choice', onclick: () => start('full') },
         h('span', { class: 'choice-ic', style: { '--cc': 'var(--brand)' } }, icon('exam')), h('b', null, 'מבחן מלא'), h('span', { class: 'muted' }, 'שאלות אקראיות מכל המאגר – כמו במבחן האמיתי')),
       h('button', { class: 'card choice', onclick: () => start('focus') },
         h('span', { class: 'choice-ic', style: { '--cc': 'var(--c-safety)' } }, icon('target')), h('b', null, 'מבחן ממוקד'), h('span', { class: 'muted' }, 'דגש על שאלות שטעיתם בהן או שעוד לא ראיתם'))),
-    hist.length ? h('div', { class: 'card' }, h('h3', null, 'מבחנים אחרונים'),
+    hist.length ? h('div', { class: 'card' }, h('h2', { class: 'sub' }, 'מבחנים אחרונים'),
       h('ul', { class: 'hist' }, ...hist.map((e, i) => {
         const idx = st.exams.length - 1 - i;
         return h('li', null, h('a', { href: `#/exam/result/${idx}`, class: `hist-row ${e.passed ? 'ok' : 'no'}` },
@@ -88,14 +88,14 @@ export function examRunView() {
   if (!E) { queueMicrotask(() => go('/exam', true)); return { el: root }; }
   if (Date.now() >= E.deadline) { queueMicrotask(() => finish(true)); return { el: root }; }
 
-  const timeEl = h('span', { class: 'timer-t' }), timerBox = h('div', { class: 'timer', 'aria-label': 'זמן שנותר' }, icon('clock'), timeEl);
+  const timeEl = h('span', { class: 'timer-t' }), timerBox = h('div', { class: 'timer', role: 'timer', 'aria-label': 'זמן שנותר' }, icon('clock'), timeEl);
   const count = h('button', { class: 'btn btn-ghost session-count nav-btn', 'aria-label': 'ניווט בין שאלות', onclick: openNav });
   const top = h('header', { class: 'session-top' },
     h('button', { class: 'btn btn-icon btn-ghost', 'aria-label': 'יציאה', onclick: leave }, icon('x')),
     timerBox, h('div', { class: 'grow' }), count);
   const body = h('div', { class: 'session-body' });
   const foot = h('footer', { class: 'session-foot exam-foot' });
-  root.append(top, body, foot);
+  root.append(h('h1', { class: 'sr-only' }, 'מבחן דמה'), top, body, foot);
 
   function tick() {
     const left = Math.max(0, Math.round((E.deadline - Date.now()) / 1000));
@@ -114,7 +114,8 @@ export function examRunView() {
     stopSpeaking();
     const id = E.ids[E.i], q = D.byId.get(id);
     clear(body); clear(foot);
-    count.textContent = `${E.i + 1} / ${E.ids.length}`;
+    count.textContent = `${E.i + 1}/${E.ids.length}`;
+    count.setAttribute('aria-label', `שאלה ${E.i + 1} מתוך ${E.ids.length}. פתיחת ניווט בין שאלות`);
     card = questionCard(q, {
       order: E.orders[id], picked: E.picks[id] ?? null, tag: false,
       onPick: (oi) => { E.picks[id] = oi; store.saveActiveExamSilently(E); card.update({ picked: oi }); paintFoot(); },
@@ -122,8 +123,10 @@ export function examRunView() {
     body.append(card.el);
     paintFoot();
     window.scrollTo({ top: 0 });
+    const stem = card.el.querySelector('.stem'); if (stem) { stem.tabIndex = -1; stem.focus({ preventScroll: true }); } // announce the new question
   }
-  function paintFoot() {
+  function paintFoot() { keepFocus(foot, paintFootInner); }
+  function paintFootInner() {
     clear(foot);
     const id = E.ids[E.i], last = E.i === E.ids.length - 1, marked = !!E.marks[id];
     foot.append(
@@ -140,7 +143,7 @@ export function examRunView() {
       b.append(
         h('div', { class: 'nav-legend' }, h('span', { class: 'lg lg-a' }, 'נענתה'), h('span', { class: 'lg lg-m' }, 'מסומנת'), h('span', { class: 'lg lg-n' }, 'לא נענתה')),
         h('div', { class: 'nav-grid' }, E.ids.map((id, i) => h('button', {
-          class: `nav-dot ${E.picks[id] != null ? 'ans' : ''} ${E.marks[id] ? 'marked' : ''} ${i === E.i ? 'cur' : ''}`,
+          class: `nav-dot ${E.picks[id] != null ? 'ans' : ''} ${E.marks[id] ? 'marked' : ''} ${i === E.i ? 'cur' : ''}`, 'aria-current': i === E.i ? 'true' : null,
           'aria-label': `שאלה ${i + 1}${E.picks[id] != null ? ', נענתה' : ''}${E.marks[id] ? ', מסומנת' : ''}`,
           onclick: () => { close(); go_(i); } }, i + 1))),
         h('div', { class: 'row gap end', style: { marginTop: '16px' } },
@@ -190,10 +193,11 @@ export function examResultView({ idx }) {
   e.qs.forEach(([id, , ok]) => { const c = D.byId.get(id).cat; (byCat[c] ||= { n: 0, r: 0 }); byCat[c].n++; byCat[c].r += ok; });
   let filter = 'wrong';
   const list = h('div', { class: 'review-list' });
-  const tabs = h('div', { class: 'seg-ctl', role: 'tablist' });
-  function paint() {
+  const tabs = h('div', { class: 'seg-ctl', role: 'group', 'aria-label': 'סינון' });
+  function paint() { keepFocus(tabs, paintInner); }
+  function paintInner() {
     clear(list); clear(tabs);
-    [['wrong', `טעויות (${wrong.length})`], ['all', `כל השאלות (${e.qs.length})`]].forEach(([k, t]) => tabs.append(h('button', { role: 'tab', 'aria-selected': String(filter === k), class: filter === k ? 'on' : '', onclick: () => { filter = k; paint(); } }, t)));
+    [['wrong', `טעויות (${wrong.length})`], ['all', `כל השאלות (${e.qs.length})`]].forEach(([k, t]) => tabs.append(h('button', { 'aria-pressed': String(filter === k), class: filter === k ? 'on' : '', onclick: () => { filter = k; paint(); } }, t)));
     const rows = filter === 'wrong' ? wrong : e.qs;
     if (!rows.length) list.append(h('p', { class: 'muted center' }, 'אין טעויות – מבחן מושלם! 🏆'));
     rows.forEach(([id, pick, ok]) => list.append(reviewRow(D.byId.get(id), pick, !!ok)));
@@ -204,12 +208,12 @@ export function examResultView({ idx }) {
     h('div', { class: `card result-hero ${tone}` },
       ringSvg(e.correct / e.total, { size: 150, stroke: 13, label: `${e.correct}/${e.total}`, sub: 'תשובות נכונות', tone }),
       h('div', { class: 'result-text' },
-        h('h1', null, e.passed ? 'עברתם את המבחן!' : 'עוד לא הפעם'),
+        h('h1', null, e.passed ? 'עברתם את מבחן הדמה!' : 'עוד לא הפעם'),
         h('p', null, e.passed
           ? (e.correct === e.total ? 'ציון מושלם. אין מה להוסיף.' : e.correct === PASS ? 'עברתם בדיוק על הסף. כדאי להמשיך לתרגל כדי לצבור ביטחון.' : `עברתם עם ${countHe(e.correct - PASS, 'תשובה אחת', 'שתי תשובות', 'תשובות')} מעל הסף. המשיכו לתרגל כדי לשמור על הרמה.`)
           : `${missing === 1 ? 'חסרה תשובה נכונה אחת' : missing === 2 ? 'חסרות שתי תשובות נכונות' : `חסרות ${missing} תשובות נכונות`} כדי להגיע ל־${PASS}. הטעויות למטה הן ההזדמנות ללמוד.`),
         h('div', { class: 'chips' }, h('span', { class: 'chip' }, icon('clock'), fmtDuration(e.secs)), h('span', { class: 'chip' }, new Date(e.ts).toLocaleDateString('he-IL')), e.kind === 'focus' ? h('span', { class: 'chip' }, 'מבחן ממוקד') : null))),
-    h('div', { class: 'card' }, h('h3', null, 'לפי נושא'),
+    h('div', { class: 'card' }, h('h2', { class: 'sub' }, 'לפי נושא'),
       h('div', { class: 'cat-bars' }, CAT_ORDER.filter((c) => byCat[c]).map((c) => h('div', { class: 'cat-bar', style: { '--cc': CATS[c].color } },
         h('span', { class: 'cb-name' }, CATS[c].title), h('span', { class: 'cb-track' }, h('i', { style: { width: `${(byCat[c].r / byCat[c].n) * 100}%` } })), h('span', { class: 'cb-val' }, `${byCat[c].r}/${byCat[c].n}`))))),
     h('div', { class: 'result-actions' },
