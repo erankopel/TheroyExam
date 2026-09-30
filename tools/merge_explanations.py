@@ -21,7 +21,7 @@ LETTER_REFS = [
     re.compile(rf"(?<![{HEB}])(?:התשובה|האפשרות)\s+(?:הראשונה|השנייה|השניה|השלישית|הרביעית|האחרונה)"),
     re.compile(rf"(?<![{HEB}])(?:הראשונה|השנייה|השניה|השלישית|הרביעית|האחרונה)\s+(?:היא|נכונה|שגויה)"),
 ]
-MASC_SECOND_PERSON = re.compile(rf"(?<![{HEB}])(?:אתה|עליך|לך|שלך|בפניך|תעצור|תאט|תבדוק|תשמור|תיתן|תסתכל|תוודא|תנהג|תפנה|תעקוף)(?![{HEB}])")
+MASC_SECOND_PERSON = re.compile(rf"(?<![{HEB}])(?:אתה|עליך|לך|שלך|בפניך|תאט|תבדוק|תשמור|תיתן|תסתכל|תוודא|תנהג|תפנה|תעקוף)(?![{HEB}])")
 MAX_WORDS = 55      # the writers were asked for <=45; slack for punctuation-glued tokens
 
 
@@ -36,8 +36,9 @@ def lint(text, q=None, field="e"):
     if not (q and q.get("ns")):
         for rx in LETTER_REFS:
             for m in rx.finditer(text):
-                # a letter that the question itself uses as a label (e.g. "רחוב א'" in a junction picture) is fine
-                if q and m.group(0) in q.get("q", ""):
+                # a letter that the question or its answers use as a label (e.g. "רחוב א'" in a junction picture,
+                # "ביטוח צד ג'") is part of the content, not a reference to an answer position
+                if q and m.group(0) in " ".join([q.get("q", ""), *q.get("a", [])]):
                     continue
                 probs.append(f"refers to an answer position: '{m.group(0)}'")
                 break
@@ -87,7 +88,7 @@ def main(argv):
         q = qs.get(qid)
         if not q:
             bad.append((qid, "unknown id")); continue
-        meta[qid] = {k: r.get(k) for k in ("basis", "v1", "v1why", "v2", "v2why", "unsure", "doubt", "doubtNote", "removed", "refs")}
+        meta[qid] = {k: r.get(k) for k in ("basis", "v1", "v1why", "v2", "v2why", "v3", "v3why", "unsure", "doubt", "doubtNote", "removed", "refs")}
         if r.get("removed"):
             removed += 1; continue
         if strict and not fully_reviewed(r):

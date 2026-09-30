@@ -10,12 +10,16 @@ let failed = 0;
 const check = (name, ok, extra = '') => { console.log(ok ? '✓' : '✗', name, ok ? '' : extra); if (!ok) failed++; };
 const ex = JSON.parse(readFileSync(new URL('../../data/explanations.json', import.meta.url), 'utf8'));
 const qs = JSON.parse(readFileSync(new URL('../../data/questions.json', import.meta.url), 'utf8'));
-const withEx = qs.filter((q) => ex[q.id]).map((q) => q.id).sort((a, b) => a - b), without = qs.filter((q) => !ex[q.id]).at(-1); // last id: practice runs in ascending id order
+const withEx = qs.filter((q) => ex[q.id]).map((q) => q.id).sort((a, b) => a - b);
 if (!withEx.length) { console.log('no explanations in data/explanations.json'); process.exit(1); }
+// One question is served WITHOUT an explanation (the file is complete, so the browser gets a copy with the last id removed).
+const without = qs.reduce((m, q) => (q.id > m.id ? q : m), qs[0]); // practice runs in ascending id order, so it comes last
+const exMinus = { ...ex }; delete exMinus[without.id];
 
 async function open(theme = 'light', width = 390) {
   const ctx = await browser.newContext({ viewport: { width, height: 800 }, locale: 'he-IL', timezoneId: 'Asia/Jerusalem', colorScheme: theme, serviceWorkers: 'block' });
   await ctx.addInitScript(() => { if (!localStorage.getItem('road26.v1')) localStorage.setItem('road26.v1', JSON.stringify({ v: 1, profile: { onboarded: true, lic: 'B', shuffle: true } })); });
+  await ctx.route('**/data/explanations.json', (r) => r.fulfill({ contentType: 'application/json', body: JSON.stringify(exMinus) }));
   const p = await ctx.newPage();
   p.on('pageerror', (e) => { console.log('pageerror', e.message); failed++; });
   await p.goto('http://localhost:8123/index.html'); await p.waitForSelector('#view .page');
