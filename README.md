@@ -20,11 +20,17 @@
 
 ## פרסום ב־GitHub Pages (בחשבון שלכם)
 
-1. מאחדים את הענף הזה ל־`main` (או מגדירים אותו כענף ברירת המחדל של המאגר).
-2. במאגר: **Settings → Pages → Build and deployment → Source: GitHub Actions**.
-3. כל דחיפה לענף ברירת המחדל מפעילה את `.github/workflows/pages.yml`: מריץ בדיקות, מחתים את ה־service worker ומפרסם.
-   הכתובת: `https://<המשתמש>.github.io/<שם-המאגר>/`
-4. **דומיין משלכם:** באותו מסך (Pages → Custom domain) מזינים למשל `theory.example.com`.
+לא צריך טוקן, מפתח פריסה (deploy key) או סודות. ה־workflow משתמש ב־`GITHUB_TOKEN` המובנה עם ההרשאות שהוגדרו בקובץ עצמו. צריך **פעולה אחת בהגדרות המאגר**:
+
+1. במאגר: **Settings → Pages → Build and deployment → Source → GitHub Actions** (ולא "Deploy from a branch").
+2. אם המאגר פרטי: Pages בחשבון חינמי עובד רק במאגר ציבורי (Settings → General → Danger Zone → Change visibility), או בחשבון בתשלום.
+3. **Actions → Deploy to GitHub Pages → Run workflow** (או דחיפה חדשה). זהו.
+
+הפריסה רצה בכל דחיפה לענף ברירת המחדל של המאגר (בדחיפה ראשונה למאגר ריק זה הענף שנדחף ראשון; אפשר לשנות שם ל־`main` ב־Settings → General → Default branch). בענפים אחרים רצות רק הבדיקות.
+כל עוד Pages לא הופעל, שלב הפריסה מסתיים באזהרה (ולא בשגיאה) עם הוראה מה לעשות.
+הכתובת: `https://<המשתמש>.github.io/<שם-המאגר>/`
+
+**דומיין משלכם:** באותו מסך (Pages → Custom domain) מזינים למשל `theory.example.com`.
    - תת־דומיין: ב־DNS יוצרים רשומת `CNAME` שמצביעה אל `<המשתמש>.github.io`.
    - דומיין ראשי (apex): רשומות `A` אל `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
    - מסמנים **Enforce HTTPS** (נדרש כדי שהתקנה כאפליקציה ומצב לא־מקוון יעבדו).

@@ -34,17 +34,36 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
+      # Pages must be switched on once by the repository owner (Settings -> Pages -> Source: GitHub Actions).
+      # Until then this job ends with a warning instead of a red X, so no failure e-mails are sent.
+      - name: Check that GitHub Pages is enabled
+        id: pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if gh api "repos/${{ github.repository }}/pages" >/dev/null 2>&1; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=GitHub Pages is not enabled::Open Settings -> Pages -> Build and deployment -> Source and choose 'GitHub Actions', then re-run this workflow."
+          fi
       - uses: actions/checkout@v4
+        if: steps.pages.outputs.enabled == 'true'
       - name: Stamp service worker (cache version + precache list)
+        if: steps.pages.outputs.enabled == 'true'
         run: python3 tools/build_sw.py
       - name: Assemble site
+        if: steps.pages.outputs.enabled == 'true'
         run: |
           mkdir -p _site/data
           cp -r index.html manifest.webmanifest sw.js .nojekyll css js fonts img _site/
           cp data/questions.json data/units.json _site/data/
           [ -f CNAME ] && cp CNAME _site/ || true
       - uses: actions/configure-pages@v5
+        if: steps.pages.outputs.enabled == 'true'
       - uses: actions/upload-pages-artifact@v3
+        if: steps.pages.outputs.enabled == 'true'
         with: { path: _site }
       - id: deployment
+        if: steps.pages.outputs.enabled == 'true'
         uses: actions/deploy-pages@v4
