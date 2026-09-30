@@ -12,8 +12,8 @@ Also: a thin strip at the top says this is the preview and which commit it is, t
 gets a "[תצוגה]" prefix (kept when the app rewrites it), the installed app is named "26 תצוגה", and version.txt
 records what was published.
 
-The output is built in a temporary directory and moved into place only when every check passed, so a failure never
-leaves a half-built /preview/ behind. The source tree is never modified.
+The output is built in a temporary directory (outside the published folder) and moved into place only when every check
+passed, so a failure never leaves a half-built /preview/ behind. The source tree is never modified.
 """
 import argparse, datetime, html, json, os, pathlib, re, shutil, subprocess, sys, tempfile
 
@@ -40,7 +40,7 @@ def main():
     ref = a.ref or 'unknown'
     short = sha[:7]
     out.parent.mkdir(parents=True, exist_ok=True)
-    stage = pathlib.Path(tempfile.mkdtemp(prefix='preview-', dir=out.parent))
+    stage = pathlib.Path(tempfile.mkdtemp(prefix='preview-'))   # outside the published folder: a killed build can never leave debris in it
     try:
         build(src, stage, sha, ref, short)
         if out.exists():

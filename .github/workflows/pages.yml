@@ -107,7 +107,10 @@ jobs:
         timeout-minutes: 5
         run: |
           if [ -f _v2/preview/build_preview.py ]; then
-            python3 _v2/preview/build_preview.py --src _v2 --out _site/preview --sha "$(git -C _v2 rev-parse HEAD)" --ref claude/v2-explanations
+            if ! timeout 240 python3 _v2/preview/build_preview.py --src _v2 --out _site/preview --sha "$(git -C _v2 rev-parse HEAD)" --ref claude/v2-explanations; then
+              rm -rf _site/preview
+              echo "::warning title=Preview skipped::the v2 preview could not be built; the real site is published without it"
+            fi
           else
             echo "::notice title=No preview::the v2 branch has no preview builder yet; publishing the real site only"
           fi
