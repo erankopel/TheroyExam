@@ -1,0 +1,20 @@
+{
+  "name": "הדרך ל־26 – הכנה למבחן התיאוריה",
+  "short_name": "הדרך ל־26",
+  "description": "הכנה למבחן התיאוריה לנהיגה עם כל השאלות הרשמיות, מבחני דמה וחזרה חכמה.",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#f3f5fb",
+  "theme_color": "#2456e6",
+  "categories": ["education"],
+  "icons": [
+    { "src": "img/app/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "img/app/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "img/app/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
+    { "src": "img/app/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

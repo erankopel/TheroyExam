@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>הדרך ל־26 – הכנה למבחן התיאוריה</title>
+  <meta name="description" content="הכנה למבחן התיאוריה לנהיגה: כל 1,802 השאלות הרשמיות מחולקות ליחידות, מבחני דמה כמו במבחן האמיתי, חזרה חכמה על טעויות ומילון תמרורים.">
+  <meta name="theme-color" content="#2456e6">
+  <meta name="color-scheme" content="light dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="הדרך ל־26">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="img/app/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="img/app/icon-180.png">
+  <link rel="preload" href="fonts/rubik-hebrew.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/style.css">
+  <script>
+    // Apply the saved theme before first paint (avoids a light flash in dark mode).
+    try {
+      var s = JSON.parse(localStorage.getItem('road26.v1') || '{}'), t = (s.profile && s.profile.theme) || 'auto';
+      var dark = t === 'dark' || (t === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+      if (s.profile && s.profile.fontScale) document.documentElement.style.setProperty('--fs', s.profile.fontScale);
+    } catch (e) {}
+  </script>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="toasts" aria-live="polite" aria-atomic="false"></div>
+  <div id="overlay"></div>
+  <noscript><p style="padding:24px;font-family:sans-serif">האפליקציה דורשת הפעלת JavaScript.</p></noscript>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

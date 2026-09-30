@@ -1,0 +1,40 @@
+{
+ "units": [
+  {
+   "key": "law-all",
+   "cat": "law",
+   "title": "חוקי התנועה",
+   "blurb": "כל השאלות בנושא",
+   "emoji": "📘",
+   "order": 1,
+   "summary": []
+  },
+  {
+   "key": "safety-all",
+   "cat": "safety",
+   "title": "בטיחות",
+   "blurb": "כל השאלות בנושא",
+   "emoji": "📘",
+   "order": 1,
+   "summary": []
+  },
+  {
+   "key": "signs-all",
+   "cat": "signs",
+   "title": "תמרורים",
+   "blurb": "כל השאלות בנושא",
+   "emoji": "📘",
+   "order": 1,
+   "summary": []
+  },
+  {
+   "key": "vehicle-all",
+   "cat": "vehicle",
+   "title": "הכרת הרכב",
+   "blurb": "כל השאלות בנושא",
+   "emoji": "📘",
+   "order": 1,
+   "summary": []
+  }
+ ]
+}
