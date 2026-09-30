@@ -21,6 +21,6 @@ export function maybeOnboard(rerender) {
       h('div', { class: 'field stacked' }, h('span', null, 'לאיזה רישיון מתכוננים?'), licBox),
       h('label', { class: 'field stacked' }, h('span', null, 'מתי המבחן? (לא חובה – נבנה תוכנית לימוד)'), h('input', { type: 'date', onchange: (e) => { date = e.target.value; } })),
       h('div', { class: 'field stacked' }, h('span', null, 'כמה שאלות ביום?'), h('div', { class: 'seg-ctl' }, [10, 20, 30, 50].map((g) => h('button', { type: 'button', class: g === goal ? 'on' : '', onclick: (e) => { goal = g; e.target.parentNode.querySelectorAll('button').forEach((b) => b.classList.toggle('on', +b.textContent === g)); } }, g)))),
-      h('button', { class: 'btn btn-lg btn-primary btn-block', style: { marginTop: '14px' }, onclick: () => { finish(); close(); } }, 'יוצאים לדרך', icon('next')));
+      h('div', { class: 'sheet-cta' }, h('button', { class: 'btn btn-lg btn-primary btn-block', onclick: () => { finish(); close(); } }, 'יוצאים לדרך', icon('next'))));
   }, { title: '', onClose: finish });
 }

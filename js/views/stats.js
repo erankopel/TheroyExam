@@ -41,7 +41,7 @@ export function statsView() {
       kpi(`${store.streak()}`, 'ימים ברצף', `שיא: ${store.bestStreak()}`), kpi(fmtDuration(ms / 1000), 'זמן לימוד', days === 1 ? 'יום לימוד אחד' : `${days} ימי לימוד`)),
     h('div', { class: 'card' }, h('h3', null, 'פעילות'), heatmap(st.log, { goal: st.profile.dailyGoal }), h('div', { class: 'hm-legend' }, h('small', { class: 'muted' }, 'פחות'), ...[0, 1, 2, 3, 4].map((l) => h('i', { class: `hm-cell hm-${l}` })), h('small', { class: 'muted' }, 'יותר'))),
     h('div', { class: 'card' }, h('h3', null, 'מבחני דמה'),
-      exams.length ? [examBars(exams), h('p', { class: 'muted small' }, `${exams.filter((e) => e.passed).length} מתוך ${exams.length} מבחנים אחרונים עברו · ציון ממוצע ${(exams.reduce((s, e) => s + e.correct, 0) / exams.length).toFixed(1)}`)] : h('p', { class: 'muted' }, 'עוד לא בוצע מבחן דמה. ', h('a', { class: 'link', href: '#/exam' }, 'לצאת לדרך'))),
+      exams.length ? [examBars(exams), h('p', { class: 'chart-note' }, 'הקו המקווקו הוא ציון עובר (26). מהישן לחדש משמאל לימין.'), h('p', { class: 'muted small' }, `${exams.filter((e) => e.passed).length} מתוך ${exams.length} מבחנים אחרונים עברו · ציון ממוצע ${(exams.reduce((s, e) => s + e.correct, 0) / exams.length).toFixed(1)}`)] : h('p', { class: 'muted' }, 'עוד לא בוצע מבחן דמה. ', h('a', { class: 'link', href: '#/exam' }, 'לצאת לדרך'))),
     h('div', { class: 'card' }, h('h3', null, 'לפי נושא'),
       h('div', { class: 'cat-bars' }, CAT_ORDER.map((c) => {
         const cc = catCounts(c); if (!cc.total) return null;

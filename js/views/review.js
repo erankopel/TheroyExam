@@ -1,5 +1,5 @@
 // "Mistakes notebook": weak questions, spaced-repetition queue, bookmarks, unseen.
-import { h, icon, clear, add } from '../ui.js';
+import { h, icon, clear, add, fmtNum } from '../ui.js';
 import { D, idsForLic } from '../data.js';
 import { store } from '../ctx.js';
 import { startPractice } from '../session.js';
@@ -18,7 +18,7 @@ export function reviewView({ tab } = {}) {
   const tabs = h('div', { class: 'cat-tabs sm', role: 'tablist' }), body = h('div');
   function paint() {
     clear(tabs); clear(body);
-    Object.entries(sets).forEach(([k, s]) => tabs.append(h('button', { role: 'tab', 'aria-selected': String(k === cur), class: `cat-tab ${k === cur ? 'on' : ''}`, onclick: () => { cur = k; paint(); } }, icon(s.icon), h('span', { class: 'ct-t' }, s.title), h('small', null, s.ids.length))));
+    Object.entries(sets).forEach(([k, s]) => tabs.append(h('button', { role: 'tab', 'aria-selected': String(k === cur), class: `cat-tab ${k === cur ? 'on' : ''}`, onclick: () => { cur = k; paint(); } }, icon(s.icon), h('span', { class: 'ct-t' }, s.title), h('small', null, fmtNum(s.ids.length)))));
     const s = sets[cur];
     body.append(h('p', { class: 'muted' }, s.hint));
     if (!s.ids.length) { body.append(h('div', { class: 'empty card' }, h('div', { class: 'empty-e' }, '✨'), h('p', null, s.empty))); return; }

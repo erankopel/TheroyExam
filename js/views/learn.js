@@ -28,7 +28,7 @@ export function learnView({ cat } = {}) {
     h('div', { class: 'page-head' }, h('h1', null, 'לימוד לפי יחידות'), h('p', { class: 'muted' }, 'כל נושא מחולק ליחידות קצרות. מתחילים מהראשונה ומתקדמים.')),
     tabs,
     h('div', { class: 'cat-summary card', style: { '--cc': CATS[active].color } },
-      h('div', { class: 'grow' }, h('b', null, `${CATS[active].title} · ${units.length} יחידות · ${fmtNum(cc.total)} שאלות`), statusBar(cc, cc.total)),
+      h('div', { class: 'grow' }, h('b', null, CATS[active].title), h('div', { class: 'cat-meta muted' }, h('span', null, units.length === 1 ? 'יחידה אחת' : `${units.length} יחידות`), h('span', null, `${fmtNum(cc.total)} שאלות`)), statusBar(cc, cc.total)),
       h('button', { class: 'btn btn-primary', onclick: () => startPractice({ title: CATS[active].title, ids: units.flatMap((u) => unitIdsForLic(u, lic)), mode: 'smart', limit: 15, back: `/learn/${active}` }) }, icon('bolt'), 'תרגול מעורב')),
     h('div', { class: 'grid unit-grid' }, units.map((u, i) => unitCard(u, i + 1))));
   return { el };

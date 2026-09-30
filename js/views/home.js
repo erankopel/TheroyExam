@@ -62,7 +62,7 @@ export function homeView() {
       h('div', { class: 'hero-text' },
         h('span', { class: `chip tone-${lab.tone}` }, lab.text),
         h('p', null, 'סיכוי משוער לעבור: ', h('b', null, `${Math.round(est.pass * 100)}%`), ` · נדרש ${APP.exam.passScore} נכונות`),
-        h('div', { class: 'hero-cov' }, statusBar(all, all.total), h('small', { class: 'muted' }, `שולטים ב־${all.strong} · בלמידה ${all.learning} · טעויות ${all.weak} · חדשות ${all.new}`)),
+        h('div', { class: 'hero-cov' }, statusBar(all, all.total), h('small', { class: 'muted' }, `שולטים ב־${fmtNum(all.strong)} · בלמידה ${fmtNum(all.learning)} · טעויות ${fmtNum(all.weak)} · חדשות ${fmtNum(all.new)}`)),
         daysLeft != null && daysLeft >= 0 ? h('div', { class: 'exam-date' }, icon('calendar'), h('div', null, h('b', null, daysLeft === 0 ? 'המבחן היום! בהצלחה 🍀' : daysLeft === 1 ? 'נשאר יום אחד למבחן' : daysLeft === 2 ? 'נשארו יומיים למבחן' : `נשארו ${daysLeft} ימים למבחן`), planLine(remaining, daysLeft))) : h('a', { class: 'link small', href: '#/settings' }, 'קבעו תאריך מבחן לקבלת תוכנית לימוד'),
         h('p', { class: 'fineprint muted' }, 'ההערכה מבוססת על ההיסטוריה שלכם באפליקציה ואינה מבטיחה תוצאה.'))),
 

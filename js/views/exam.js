@@ -1,5 +1,5 @@
 // Mock theory exam: intro, run (timer, navigation, flagging) and result review.
-import { h, icon, clear, sheet, confirmDialog, fmtTime, fmtDuration, shuffle, toast, countHe } from '../ui.js';
+import { h, icon, clear, sheet, confirmDialog, fmtTime, fmtDuration, shuffle, toast, countHe, fmtNum } from '../ui.js';
 import { D, idsForLic } from '../data.js';
 import { store, go } from '../ctx.js';
 import { APP, LICENSES, CATS, CAT_ORDER } from '../config.js';
@@ -53,7 +53,7 @@ export function examIntroView() {
       h('div', { class: 'rule' }, h('b', null, N), h('span', null, 'שאלות')),
       h('div', { class: 'rule' }, h('b', null, minutesFor()), h('span', null, minutesFor() !== BASE_MIN ? `דקות (כולל תוספת זמן)` : 'דקות')),
       h('div', { class: 'rule rule-pass' }, h('b', null, PASS), h('span', null, `נכונות לפחות (עד ${N - PASS} טעויות)`))),
-    h('div', { class: 'card lic-line' }, h('span', { class: 'lic-emoji' }, lic.icon), h('div', { class: 'grow' }, h('b', null, `סוג רישיון: ${lic.label} (${lic.short})`), h('div', { class: 'muted small' }, `השאלות נבחרות אקראית מתוך ${pool} שאלות רלוונטיות`)), h('a', { class: 'btn btn-ghost', href: '#/settings' }, 'שינוי')),
+    h('div', { class: 'card lic-line' }, h('span', { class: 'lic-emoji' }, lic.icon), h('div', { class: 'grow' }, h('b', null, `סוג רישיון: ${lic.label} (${lic.short})`), h('div', { class: 'muted small' }, `השאלות נבחרות אקראית מתוך ${fmtNum(pool)} שאלות רלוונטיות`)), h('a', { class: 'btn btn-ghost', href: '#/settings' }, 'שינוי')),
     active ? h('div', { class: 'card resume-card' },
       h('div', null, h('b', null, 'יש מבחן פתוח'), h('div', { class: 'muted small' }, `נענו ${Object.keys(active.picks).length} מתוך ${active.ids.length}`)),
       h('div', { class: 'row gap' },
@@ -140,7 +140,7 @@ export function examRunView() {
       b.append(
         h('div', { class: 'nav-legend' }, h('span', { class: 'lg lg-a' }, 'נענתה'), h('span', { class: 'lg lg-m' }, 'מסומנת'), h('span', { class: 'lg lg-n' }, 'לא נענתה')),
         h('div', { class: 'nav-grid' }, E.ids.map((id, i) => h('button', {
-          class: `nav-dot ${E.picks[id] != null ? 'ans' : ''} ${E.marks[id] ? 'mark' : ''} ${i === E.i ? 'cur' : ''}`,
+          class: `nav-dot ${E.picks[id] != null ? 'ans' : ''} ${E.marks[id] ? 'marked' : ''} ${i === E.i ? 'cur' : ''}`,
           'aria-label': `שאלה ${i + 1}${E.picks[id] != null ? ', נענתה' : ''}${E.marks[id] ? ', מסומנת' : ''}`,
           onclick: () => { close(); go_(i); } }, i + 1))),
         h('div', { class: 'row gap end', style: { marginTop: '16px' } },
@@ -212,7 +212,7 @@ export function examResultView({ idx }) {
     h('div', { class: 'card' }, h('h3', null, 'לפי נושא'),
       h('div', { class: 'cat-bars' }, CAT_ORDER.filter((c) => byCat[c]).map((c) => h('div', { class: 'cat-bar', style: { '--cc': CATS[c].color } },
         h('span', { class: 'cb-name' }, CATS[c].title), h('span', { class: 'cb-track' }, h('i', { style: { width: `${(byCat[c].r / byCat[c].n) * 100}%` } })), h('span', { class: 'cb-val' }, `${byCat[c].r}/${byCat[c].n}`))))),
-    h('div', { class: 'row gap wrap' },
+    h('div', { class: 'result-actions' },
       wrong.length ? h('button', { class: 'btn btn-lg btn-primary', onclick: () => startPractice({ title: 'טעויות מהמבחן', ids: wrong.map((x) => x[0]), mode: 'random', back: `/exam/result/${idx}`, kind: 'mistakes' }) }, icon('refresh'), 'תרגול הטעויות') : null,
       h('a', { class: 'btn btn-lg btn-ghost', href: '#/exam' }, 'מבחן נוסף'),
       h('a', { class: 'btn btn-lg btn-ghost', href: '#/' }, 'למסך הבית')),

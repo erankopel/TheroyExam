@@ -65,15 +65,16 @@ export function heatmap(log, { weeks = 15, goal = 20, now = Date.now() } = {}) {
   return h('div', { class: 'heatmap', role: 'img', 'aria-label': 'פעילות בשבועות האחרונים' }, cols);
 }
 
-/** Bars of exam scores with the pass line. exams: [{correct,total}] */
+/** Bars of exam scores with the pass line. exams: [{correct,total}] (geometry is always left-to-right, see .exam-bars) */
 export function examBars(exams, pass = 26, max = 30) {
-  const W = 320, H = 130, pad = 22, n = Math.max(exams.length, 1), gap = 6;
-  const bw = Math.min(28, (W - pad * 2 - gap * (n - 1)) / n);
-  const total = bw * n + gap * (n - 1), x0 = (W - total) / 2;
+  const W = 320, H = 130, padL = 14, R = 34, n = Math.max(exams.length, 1), gap = 6;
+  const usable = W - padL - R;
+  const bw = Math.min(28, (usable - gap * (n - 1)) / n);
+  const total = bw * n + gap * (n - 1), x0 = padL + (usable - total) / 2;
   const y = (v) => H - 20 - (v / max) * (H - 40);
-  const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, class: 'exam-bars', role: 'img', 'aria-label': 'תוצאות מבחני דמה' },
-    s('line', { x1: 6, x2: W - 6, y1: y(pass), y2: y(pass), class: 'passline' }),
-    s('text', { x: W - 8, y: y(pass) - 4, class: 'passtext', 'text-anchor': 'end' }, `עובר: ${pass}`));
+  const svg = s('svg', { viewBox: `0 0 ${W} ${H}`, class: 'exam-bars', role: 'img', 'aria-label': `תוצאות מבחני דמה. קו מקווקו: ${pass} תשובות נכונות – ציון עובר` },
+    s('line', { x1: 6, x2: W - R + 2, y1: y(pass), y2: y(pass), class: 'passline' }),
+    s('text', { x: W - 4, y: y(pass) + 4, 'text-anchor': 'end', class: 'passtext' }, String(pass)));
   exams.forEach((e, i) => {
     const x = x0 + i * (bw + gap), yy = y(e.correct);
     svg.append(s('rect', { x, y: yy, width: bw, height: H - 20 - yy, rx: 5, class: e.correct >= pass ? 'bar-good' : 'bar-bad' }),

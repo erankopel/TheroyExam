@@ -23,7 +23,7 @@ export function openQuestion(id, ids = [id]) {
           rec ? h('span', { class: 'muted' }, ` · ${rec.r} נכון, ${rec.w} שגוי`) : null),
         ids.length > 1 ? h('div', { class: 'row between', style: { marginTop: '12px' } },
           h('button', { class: 'btn btn-ghost', disabled: i === 0, onclick: () => { i--; paint(); } }, icon('prev'), 'הקודמת'),
-          h('span', { class: 'muted small' }, `${i + 1} / ${ids.length}`),
+          h('span', { class: 'muted small session-count' }, `${i + 1}/${ids.length}`),
           h('button', { class: 'btn btn-ghost', disabled: i === ids.length - 1, onclick: () => { i++; paint(); } }, 'הבאה', icon('next'))) : null);
     };
     paint();

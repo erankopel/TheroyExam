@@ -119,7 +119,7 @@ export function practiceView() {
           ...wrongIds.map((id) => wrongItem(D.byId.get(id), first.get(id).pick))) : h('p', { class: 'muted' }, 'אין טעויות בסבב הזה 🎉')));
     body.append(h('div', { class: 'summary-actions' },
       S.kind !== 'mistakes' ? h('button', { class: 'btn btn-lg btn-primary', onclick: () => restart() }, 'סבב נוסף', icon('next')) : null,
-      wrongIds.length ? h('button', { class: 'btn btn-lg btn-ghost', onclick: () => startPractice({ title: 'חזרה על טעויות הסבב', ids: wrongIds, mode: 'random', back: S.back, kind: 'mistakes' }) }, icon('refresh'), 'תרגול הטעויות') : null,
+      wrongIds.length ? h('button', { class: 'btn btn-lg btn-ghost', onclick: () => startPractice({ title: 'חזרה על טעויות הסבב', ids: wrongIds, mode: 'random', back: S.back, kind: 'mistakes' }) }, icon('refresh'), 'תרגול טעויות') : null,
       h('button', { class: 'btn btn-lg btn-ghost', onclick: () => go(S.back) }, 'סיום')));
     window.scrollTo({ top: 0 });
   }
@@ -130,7 +130,8 @@ export function practiceView() {
     if (!answered && /^[1-4]$/.test(e.key) && card) {
       const b = card.buttons[+e.key - 1]; if (b) { e.preventDefault(); b.click(); }
     } else if (answered && (e.key === 'Enter' || e.key === ' ' || e.key === 'ArrowLeft')) {
-      if (document.activeElement && document.activeElement.classList.contains('fb-next') && e.key !== 'ArrowLeft') return; // native click handles it
+      // Enter/Space on a focused control (bookmark, exit, zoom...) must do that control's job; only the arrow key is a global "next"
+      if (e.key !== 'ArrowLeft' && e.target && e.target.closest && e.target.closest('button, a, input, select, textarea, summary')) return;
       e.preventDefault(); next();
     }
   };
