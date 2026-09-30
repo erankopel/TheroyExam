@@ -1,6 +1,9 @@
 name: Deploy to GitHub Pages
 
 # Publishes the static site whenever the repository's default branch changes (or on demand).
+# The deploy job also adds the marked v2 preview under /preview/ (built from branch claude/v2-explanations by
+# preview/build_preview.py). That part is best effort: if anything about it fails, the real site is published unchanged.
+# A push to the v2 branch triggers this workflow on the default branch (workflow_dispatch) to refresh the preview.
 on:
   push:
   workflow_dispatch:
@@ -25,6 +28,35 @@ jobs:
         run: node --test tests/*.test.mjs
       - name: Validate data
         run: python3 tools/validate_data.py
+
+  # On every non-default branch that has the preview builder: prove that the preview can be built (nothing is published here).
+  preview-selftest:
+    if: github.ref_name != github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the preview into a temporary folder
+        run: |
+          if [ -f preview/build_preview.py ]; then
+            python3 preview/build_preview.py --src . --out "$RUNNER_TEMP/preview" --sha "$GITHUB_SHA" --ref "$GITHUB_REF_NAME"
+          else
+            echo "no preview builder on this branch"
+          fi
+
+  # A push to the v2 branch republishes the real site, which then carries the fresh /preview/ built from that branch.
+  refresh-preview:
+    needs: [test, preview-selftest]
+    if: github.event_name == 'push' && github.ref_name == 'claude/v2-explanations'
+    runs-on: ubuntu-latest
+    permissions:
+      actions: write
+      contents: read
+    steps:
+      - name: Ask the default-branch workflow to redeploy
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run pages.yml --repo "${{ github.repository }}" --ref "${{ github.event.repository.default_branch }}"
 
   deploy:
     needs: test
@@ -60,6 +92,25 @@ jobs:
           cp data/questions.json data/units.json _site/data/
           [ -f data/explanations.json ] && cp data/explanations.json _site/data/ || true
           [ -f CNAME ] && cp CNAME _site/ || true
+      # --- v2 preview under /preview/ : best effort, any failure here leaves the real site exactly as it is ---
+      - name: Get the v2 preview sources
+        id: v2
+        if: steps.pages.outputs.enabled == 'true'
+        continue-on-error: true
+        uses: actions/checkout@v4
+        with:
+          ref: claude/v2-explanations
+          path: _v2
+      - name: Add the v2 preview under /preview/
+        if: steps.pages.outputs.enabled == 'true' && steps.v2.outcome == 'success'
+        continue-on-error: true
+        timeout-minutes: 5
+        run: |
+          if [ -f _v2/preview/build_preview.py ]; then
+            python3 _v2/preview/build_preview.py --src _v2 --out _site/preview --sha "$(git -C _v2 rev-parse HEAD)" --ref claude/v2-explanations
+          else
+            echo "::notice title=No preview::the v2 branch has no preview builder yet; publishing the real site only"
+          fi
       - uses: actions/configure-pages@v5
         if: steps.pages.outputs.enabled == 'true'
       - uses: actions/upload-pages-artifact@v3

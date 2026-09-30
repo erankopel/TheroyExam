@@ -58,6 +58,7 @@ python3 tools/validate_data.py     # בדיקות שלמות למאגר
 ```bash
 NODE_PATH=$(npm root -g) node tests/e2e/flow.mjs <תיקיית-צילומים>   # זרימה מלאה: לימוד, תרגול, מבחן, כל המסכים
 NODE_PATH=$(npm root -g) node tests/e2e/explain.mjs                  # כרטיס ההסבר: מצב בהיר וכהה, נגישות
+NODE_PATH=$(npm root -g) node tests/e2e/preview.mjs                  # התצוגה תחת /preview/ לא מתערבבת עם האתר הרגיל (דורש אתר משולב, ראו preview/README.md)
 NODE_PATH=$(npm root -g) node tests/e2e/regress.mjs                  # בדיקות רגרסיה לבאגים שנמצאו בסקירה (טאבים, Back, גיבוי, offline...)
 ```
 
@@ -76,9 +77,9 @@ python3 tools/build_sw.py      # מחתים גרסה חדשה ל-service worker
 
 שאלות חדשות שלא סווגו ליחידה מקבלות יחידת ברירת־מחדל של הקטגוריה שלהן; מוסיפים אותן ל־`data/classification.json`.
 
-### גרסת תצוגה נפרדת
+### גרסת תצוגה של גרסה 2 (`/preview/`)
 
-התיקייה `preview/` היא התוכן של מאגר נפרד (`TheroyExam-preview`) שמפרסם עותק מסומן של ענף גרסה 2 בכתובת משלו (`https://<המשתמש>.github.io/TheroyExam-preview/`), בלי לגעת באתר הרגיל ובלי לשתף איתו התקדמות שמורה. הוראות ההפעלה ב־`preview/README.md`.
+הענף `claude/v2-explanations` מפורסם גם בתצוגה מקדימה תחת **`/preview/`** של האתר (`eva.medicom.vip/preview/`), בלי לגעת בגרסה 1 שבכתובת הרגילה. `preview/build_preview.py` בונה עותק מסומן (פס כתום, `noindex`, שם אחר להתקנה), ומחליף כל מזהה שעלול להתנגש עם האתר הרגיל (מפתח ההתקדמות, שמות ה־cache) כדי שההתקדמות של הלומדת לא תתערבב עם התצוגה. שלב התצוגה בתהליך הפרסום הוא "ניסיון בלבד": כשל בו לא מונע את פרסום האתר הרגיל. דחיפה לענף גרסה 2 מרעננת את התצוגה אוטומטית. פרטים ב־`preview/README.md`, ובדיקה ב־`tests/e2e/preview.mjs`.
 
 ### הסברים לשאלות (`data/explanations.json`)
 
