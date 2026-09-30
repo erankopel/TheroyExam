@@ -2,6 +2,7 @@
 import { h, icon, sheet } from './ui.js';
 import { LETTERS, CATS } from './config.js';
 import { D, imgUrl, explanationOf } from './data.js';
+import { visualForQuestion } from './visual-data.js';
 import { shuffle } from './ui.js';
 
 /** Display order of the 4 answers (array of original indexes). Position-dependent questions keep the official order. */
@@ -100,6 +101,7 @@ export function explanationBox(q, { open = false, plain = false } = {}) {
   const body = [
     h('p', { class: 'expl-text' }, x.e),
     x.k ? h('p', { class: 'expl-k' }, h('strong', null, 'לזכור: '), x.k) : null,
+    (() => { const v = visualForQuestion(q.id); return v ? h('a', { class: 'expl-vis link', href: `#/visual/${v.key}` }, icon('eye'), `לאיור: ${v.title}`) : null; })(),
     h('p', { class: 'expl-note' }, 'הסבר לימודי לא רשמי, שנכתב על בסיס המאגר. במקרה של סתירה המאגר הרשמי קובע.'),
   ];
   if (plain) return h('div', { class: 'expl expl-plain' }, h('div', { class: 'expl-head' }, icon('bulb'), h('span', null, 'הסבר')), ...body);

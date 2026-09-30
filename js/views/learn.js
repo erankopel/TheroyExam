@@ -7,6 +7,7 @@ import { unitCounts, catCounts, licOf } from '../progress.js';
 import { statusBar } from '../charts.js';
 import { startPractice } from '../session.js';
 import { openQuestion, questionRow } from './browse.js';
+import { visualForUnit, VISUALS } from '../visual-data.js';
 
 export function unitIconEl(u, cls = '') {
   const cat = CATS[u.cat];
@@ -26,6 +27,7 @@ export function learnView({ cat } = {}) {
   const cc = catCounts(active);
   const el = h('section', { class: 'page' },
     h('div', { class: 'page-head' }, h('h1', null, 'לימוד לפי יחידות'), h('p', { class: 'muted' }, 'כל נושא מחולק ליחידות קצרות. מתחילים מהראשונה ומתקדמים.')),
+    h('a', { class: 'card visual-strip', href: '#/visual' }, icon('eye'), h('div', { class: 'grow' }, h('b', null, 'איורי הסבר'), h('small', { class: 'muted' }, VISUALS.map((v) => v.title).join(' · '))), icon('chevL')),
     tabs,
     h('div', { class: 'cat-summary card', style: { '--cc': CATS[active].color } },
       h('div', { class: 'grow' }, h('b', null, CATS[active].title), h('div', { class: 'cat-meta muted' }, h('span', null, units.length === 1 ? 'יחידה אחת' : `${units.length} יחידות`), h('span', null, `${fmtNum(cc.total)} שאלות`)), statusBar(cc, cc.total)),
@@ -83,7 +85,8 @@ export function unitView({ key }) {
       h('button', { class: 'btn btn-lg btn-primary', onclick: () => startPractice({ title: u.title, ids, mode: 'smart', limit: 15, back: `/unit/${key}` }) }, icon('play'), c.seen ? 'המשך תרגול' : 'התחלת תרגול'),
       h('button', { class: 'btn btn-lg btn-ghost', onclick: () => startPractice({ title: u.title, ids, mode: 'seq', back: `/unit/${key}` }) }, icon('list'), 'כל היחידה לפי הסדר'),
       c.weak ? h('button', { class: 'btn btn-lg btn-ghost', onclick: () => startPractice({ title: `טעויות – ${u.title}`, ids: ids.filter((id) => store.statusOf(id) === 'weak'), mode: 'random', back: `/unit/${key}`, kind: 'mistakes' }) }, icon('refresh'), 'תיקון טעויות') : null,
-      signs ? h('a', { class: 'btn btn-lg btn-ghost', href: `#/signs/${key}` }, icon('cards'), 'מילון התמרורים') : null),
+      signs ? h('a', { class: 'btn btn-lg btn-ghost', href: `#/signs/${key}` }, icon('cards'), 'מילון התמרורים') : null,
+      visualForUnit(key).map((v) => h('a', { class: 'btn btn-lg btn-ghost', href: `#/visual/${v.key}` }, icon('eye'), `איור: ${v.title}`))),
     summaryCard(u),
     h('div', { class: 'card' }, h('div', { class: 'section-head tight' }, h('h2', { class: 'sub' }, 'כל השאלות ביחידה'), ftabs), list),
     nextU ? h('a', { class: 'card next-unit', href: `#/unit/${nextU.key}` }, h('span', { class: 'muted small' }, 'היחידה הבאה'), h('b', null, nextU.title), icon('chevL')) : null);

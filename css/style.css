@@ -379,3 +379,70 @@ h2.sub { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; } .section-h
 .expl-plain .expl-k { background: var(--surface); }
 .expl-note { margin: 0; font-size: .76rem; color: var(--ink-3); line-height: 1.4; }
 @media (prefers-reduced-motion: reduce) { .expl-chev { transition: none; } }
+
+/* ---- infographics ------------------------------------------------------------------ */
+.visual-strip { display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-bottom: 12px; text-decoration: none; color: inherit; }
+.visual-strip .ic { color: var(--brand); flex: none; } .visual-strip small { display: block; }
+.visual-card { display: flex; align-items: center; gap: 12px; padding: 14px; text-decoration: none; color: inherit; }
+.visual-card .uc-body { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.visual-ic { flex: none; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 14px; background: var(--brand-soft); color: var(--brand); }
+.visual-ic .ic { width: 24px; height: 24px; }
+.vz { display: flex; flex-direction: column; gap: 12px; margin-bottom: 12px; }
+.vz-controls { display: flex; flex-direction: column; gap: 14px; }
+.vz-ctl { display: flex; flex-direction: column; gap: 6px; }
+.vz-lab { font-weight: 700; font-size: .9rem; color: var(--ink-2); }
+.vz-slider { display: flex; align-items: center; gap: 14px; }
+.vz-slider input[type=range] { flex: 1; min-width: 0; height: 44px; accent-color: var(--brand); }
+.vz-speed-val { font-weight: 800; font-size: 1.15rem; min-width: 5.5em; text-align: end; color: var(--brand-2); }
+.vz-presets { display: grid; grid-template-columns: repeat(auto-fit, minmax(66px, 1fr)); gap: 6px; }
+.vz-presets .chip-btn { justify-content: center; padding: 7px 4px; font-size: .82rem; white-space: nowrap; }
+.vz-figure { display: flex; flex-direction: column; gap: 12px; }
+.vz-svg svg { width: 100%; height: auto; display: block; direction: ltr; }
+/* stopping distance */
+.vz-road { fill: var(--surface-3); } .vz-lane { stroke: var(--ink-3); stroke-width: 2; stroke-dasharray: 10 8; opacity: .55; }
+.vz-seg-r { fill: var(--warn); } .vz-seg-b { fill: var(--bad); }
+.vz-tick { stroke: var(--ink-3); stroke-width: 1.5; } .vz-num { fill: var(--ink-2); font: 600 12px system-ui, sans-serif; }
+.vz-stem { stroke: var(--ink-2); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.vz-warn { fill: var(--warn); } .vz-brake { fill: var(--bad); }
+.vz-car rect:first-child, .vz-car-stop rect:first-child { fill: var(--brand); } .vz-win { fill: var(--surface); opacity: .85; }
+.vz-car-stop { opacity: .55; } .vz-stopline { stroke: var(--ink); stroke-width: 3; }
+.vz-legend { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; font-size: .9rem; }
+.vz-legend li { display: flex; align-items: center; gap: 8px; }
+.sw { display: inline-block; flex: none; width: 16px; height: 16px; border-radius: 5px; }
+.sw-r { background: var(--warn); } .sw-b { background: var(--bad); } .sw-cover { background: color-mix(in srgb, var(--brand) 35%, transparent); border: 1.5px solid var(--brand); }
+.sw-dead { background: color-mix(in srgb, var(--bad) 45%, transparent); border: 1.5px solid var(--bad); } .sw-ok { background: color-mix(in srgb, var(--good) 45%, transparent); border: 1.5px dashed var(--good); }
+.vz-tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.vz-tile { border-radius: 14px; padding: 10px 6px; text-align: center; background: var(--surface-2); border-block-start: 4px solid var(--line); }
+.vz-tile small { display: block; color: var(--ink-2); font-size: .78rem; font-weight: 600; } .vz-tile b { display: block; font-size: 1.25rem; margin-top: 2px; }
+.vz-tile-r { border-block-start-color: var(--warn); } .vz-tile-b { border-block-start-color: var(--bad); } .vz-tile-t { border-block-start-color: var(--brand); background: var(--brand-soft); }
+.vz-cars, .vz-half { margin: 0; font-size: .92rem; line-height: 1.55; }
+/* blind spots */
+.vz-blind-fig { max-height: 520px; margin-inline: auto; width: min(100%, 380px); }
+.vz-vehicle { fill: var(--brand); } .vz-cab { fill: var(--brand-2); } .vz-glass { fill: var(--surface); opacity: .8; } .vz-mirror { fill: var(--ink); }
+.vz-cover { fill: color-mix(in srgb, var(--brand) 30%, transparent); stroke: var(--brand); stroke-width: 1; }
+.vz-dead { fill: color-mix(in srgb, var(--bad) 40%, transparent); stroke: var(--bad); stroke-width: 1.5; }
+.vz-dead.is-covered { fill: color-mix(in srgb, var(--good) 40%, transparent); stroke: var(--good); stroke-dasharray: 6 4; }
+.vz-thing { fill: var(--ink); stroke: var(--ink); } .vz-thing[transform] circle { stroke: none; }
+.vz-status { margin: 0; font-size: .92rem; line-height: 1.55; }
+.callout { margin: 0; padding: 10px 12px; border-radius: 12px; background: var(--brand-soft); color: var(--ink); font-size: .92rem; line-height: 1.55; }
+.callout[hidden] { display: none; }
+/* safety systems */
+.vz-side { max-width: 560px; margin-inline: auto; }
+.vz-body { fill: var(--brand); } .vz-wheel { fill: var(--ink); } .vz-hub { fill: var(--surface-3); }
+.vz-seat { fill: var(--brand-2); } .vz-person { fill: var(--warn); } .vz-person-b { stroke: var(--warn); stroke-width: 6; stroke-linecap: round; }
+.vz-belt { stroke: var(--surface); stroke-width: 3; } .vz-bag { fill: none; stroke: var(--surface); stroke-width: 2.5; stroke-dasharray: 4 3; }
+.vz-wheelbar { stroke: var(--surface); stroke-width: 3; stroke-linecap: round; }
+.vz-dot circle { fill: var(--surface); stroke: var(--ink); stroke-width: 2; } .vz-dot text { fill: var(--ink); font: 700 11px system-ui, sans-serif; }
+.vz-dot.on circle { fill: var(--bad-fill); stroke: var(--surface); stroke-width: 2.5; } .vz-dot.on text { fill: var(--on-fill); font-size: 12px; }
+.vz-sys-groups { display: flex; flex-direction: column; gap: 10px; }
+.vz-gh { font-size: .82rem; font-weight: 700; color: var(--ink-2); margin: 0 0 6px; }
+.vz-sys-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.vz-sys { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 12px 6px 14px; border-radius: 999px; border: 1.5px solid var(--line); background: var(--surface); font-weight: 600; font-size: .9rem; color: var(--ink); }
+.vz-sys.on { background: var(--brand-soft); border-color: var(--brand); color: var(--brand-2); }
+.vz-sys-n { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--surface-3); font-size: .8rem; font-weight: 800; flex: none; }
+.vz-sys.on .vz-sys-n { background: var(--bad-fill); color: var(--on-fill); } .vz-sys-n.big { width: 36px; height: 36px; background: var(--bad-fill); color: var(--on-fill); font-size: 1rem; }
+.vz-detail { display: flex; flex-direction: column; gap: 10px; } .vz-detail h3 { margin: 0; font-size: 1.05rem; }
+.vz-detail-head { display: flex; align-items: center; gap: 10px; } .vz-does { margin: 0; line-height: 1.6; }
+/* link under an explanation */
+.expl-vis { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 8px; font-size: .9rem; }
+@media (min-width: 720px) { .vz-tiles { gap: 12px; } }

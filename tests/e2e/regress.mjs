@@ -82,7 +82,7 @@ async function answer(p, right = true) {
   await p.route('**/img/q/**', (r) => r.abort());
   await p.goto('http://localhost:8123/index.html'); await p.waitForSelector('#view .page');
   await p.evaluate(() => { location.hash = '#/unit/signs-markings'; }); await p.waitForSelector('.unit-hero'); await p.click('text=/התחלת תרגול|המשך תרגול/'); await p.waitForSelector('.qcard');
-  await p.waitForTimeout(800);
+  await p.waitForSelector('.qimg-missing', { timeout: 5000 }).catch(() => null); // the note appears once the picture request has failed
   check('missing picture shows a note instead of a broken image', (await p.$('.qimg-missing')) !== null, await p.evaluate(() => document.querySelector('.qimg')?.innerHTML.slice(0, 200)));
   await ctx.close();
 }

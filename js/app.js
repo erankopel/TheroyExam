@@ -10,6 +10,7 @@ import { examIntroView, examRunView, examResultView } from './views/exam.js';
 import { reviewView } from './views/review.js';
 import { signsView } from './views/signs.js';
 import { statsView } from './views/stats.js';
+import { visualIndexView, visualView } from './views/visual.js';
 import { searchView } from './views/search.js';
 import { settingsView } from './views/settings.js';
 import { maybeOnboard } from './views/onboarding.js';
@@ -18,6 +19,7 @@ const ROUTES = [
   ['/', homeView, 'home'],
   ['/learn', learnView, 'learn'], ['/learn/:cat', learnView, 'learn'],
   ['/unit/:key', unitView, 'learn'],
+  ['/visual', visualIndexView, 'learn'], ['/visual/:key', visualView, 'learn'],
   ['/practice', practiceView, 'learn', true],
   ['/exam', examIntroView, 'exam'], ['/exam/run', examRunView, 'exam', true], ['/exam/result/:idx', examResultView, 'exam'],
   ['/review', reviewView, 'review'], ['/review/:tab', reviewView, 'review'],
@@ -75,7 +77,7 @@ function render() {
   if (changed) window.scrollTo({ top: 0 });
   lastPath = path;
   const T = { learn: 'לימוד', exam: 'מבחן דמה', review: 'חזרה', signs: 'מילון תמרורים', stats: 'התקדמות', search: 'חיפוש', settings: 'הגדרות' };
-  document.title = T[m.r.tab] ? `${T[m.r.tab]} · ${APP.name}` : `${APP.name} – ${APP.tagline}`;
+  document.title = out.title ? `${out.title} · ${APP.name}` : T[m.r.tab] ? `${T[m.r.tab]} · ${APP.name}` : `${APP.name} – ${APP.tagline}`;
   if (changed && !m.r.focus) viewEl.focus({ preventScroll: true });
 }
 
