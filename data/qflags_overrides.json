@@ -1,0 +1,6 @@
+{
+  "_comment": "Manual corrections from the independent data audit; applied on top of qflags.json by tools/build_data.py",
+  "sg": [518, 574, 665],
+  "notSg": [381, 455, 540, 544, 551, 639],
+  "nsRemove": [358, 380]
+}

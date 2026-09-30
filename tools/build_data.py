@@ -30,9 +30,12 @@ def main():
     cls = load("classification.json", {})
     summaries = load("summaries.json", {})
     qflags = load("qflags.json", {})
+    ov = load("qflags_overrides.json", {})
     ns_extra = set(qflags.get("ns", []))
-    sg_extra = set(qflags.get("sg", []))
-    sg_block = set(qflags.get("notSg", []))
+    ns_remove = set(ov.get("nsRemove", []))
+    sg_extra = set(qflags.get("sg", [])) | set(ov.get("sg", []))
+    sg_block = (set(qflags.get("notSg", [])) | set(ov.get("notSg", []))) - set(ov.get("sg", []))
+    sg_extra -= set(ov.get("notSg", []))
 
     if not units_def:
         units_def = [dict(key=f"{k}-all", cat=k, title=he, blurb="כל השאלות בנושא", emoji="📘", order=1) for he, k in CAT_KEY.items()]
@@ -52,7 +55,7 @@ def main():
         item = {"id": r["id"], "q": r["q"], "a": r["a"], "c": r["c"], "cat": cat, "u": u, "lic": r["lic"]}
         if r["img"]:
             item["img"] = os.path.basename(r["img"])
-        if any(POS_DEP.search(a) for a in r["a"]) or r["id"] in ns_extra:
+        if (any(POS_DEP.search(a) for a in r["a"]) or r["id"] in ns_extra) and r["id"] not in ns_remove:
             item["ns"] = 1
         if r["img"] and cat == "signs" and r["id"] not in sg_block and (SIGN_MEANING.search(r["q"]) or r["id"] in sg_extra):
             item["sg"] = 1
