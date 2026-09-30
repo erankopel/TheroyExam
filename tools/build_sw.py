@@ -4,7 +4,7 @@ import hashlib, json, re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-INCLUDE = ["index.html", "manifest.webmanifest", "css", "js", "fonts", "data/questions.json", "data/units.json", "data/explanations.json", "img/app", "img/units"]
+INCLUDE = ["index.html", "manifest.webmanifest", "css", "js", "fonts", "data/questions.json", "data/units.json", "data/explanations.json", "data/confusable.json", "img/app", "img/units"]
 
 def files():
     out = []

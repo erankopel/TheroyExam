@@ -1,13 +1,15 @@
 // Loads the question bank + unit definitions and builds lookup indexes.
 import { CAT_ORDER } from './config.js';
 
-export const D = { questions: [], byId: new Map(), units: [], unitByKey: new Map(), catUnits: {}, ready: false };
+export const D = { questions: [], byId: new Map(), units: [], unitByKey: new Map(), catUnits: {}, confusable: [], ready: false };
 
 export async function loadData() {
-  const [qs, us] = await Promise.all([
+  const [qs, us, cf] = await Promise.all([
     fetch('data/questions.json').then((r) => { if (!r.ok) throw new Error('questions'); return r.json(); }),
     fetch('data/units.json').then((r) => { if (!r.ok) throw new Error('units'); return r.json(); }),
+    fetch('data/confusable.json').then((r) => (r.ok ? r.json() : null)).catch(() => null), // optional: groups of easily confused signs
   ]);
+  D.confusable = (cf && cf.groups) || [];
   D.questions = qs;
   D.byId = new Map(qs.map((q) => [q.id, q]));
   D.units = us.units.slice().sort((a, b) => CAT_ORDER.indexOf(a.cat) - CAT_ORDER.indexOf(b.cat) || a.order - b.order);

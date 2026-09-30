@@ -381,9 +381,9 @@ h2.sub { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; } .section-h
 @media (prefers-reduced-motion: reduce) { .expl-chev { transition: none; } }
 
 /* ---- infographics ------------------------------------------------------------------ */
-.visual-strip { display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-bottom: 12px; text-decoration: none; color: inherit; }
+a.visual-strip { display: flex; align-items: center; gap: 12px; padding: 12px 14px; margin-bottom: 12px; text-decoration: none; color: inherit; }
 .visual-strip .ic { color: var(--brand); flex: none; } .visual-strip small { display: block; }
-.visual-card { display: flex; align-items: center; gap: 12px; padding: 14px; text-decoration: none; color: inherit; }
+a.visual-card { display: flex; align-items: center; gap: 12px; padding: 14px; text-decoration: none; color: inherit; }
 .visual-card .uc-body { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
 .visual-ic { flex: none; width: 46px; height: 46px; display: grid; place-items: center; border-radius: 14px; background: var(--brand-soft); color: var(--brand); }
 .visual-ic .ic { width: 24px; height: 24px; }
@@ -446,3 +446,32 @@ h2.sub { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; } .section-h
 /* link under an explanation */
 .expl-vis { display: inline-flex; align-items: center; gap: 6px; margin: 0 0 8px; font-size: .9rem; }
 @media (min-width: 720px) { .vz-tiles { gap: 12px; } }
+/* confusable signs */
+.conf-section { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; } .conf-section h2.sub { margin: 0; }
+.conf-drill { display: flex; flex-direction: column; gap: 12px; }
+.conf-drill-head { display: flex; align-items: center; gap: 12px; } .conf-drill-head > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+a.conf-card { display: flex; align-items: center; gap: 12px; padding: 12px 14px; text-decoration: none; color: inherit; }
+.conf-card.has-weak { border-color: var(--bad); box-shadow: inset 4px 0 0 var(--bad); }
+.conf-card .uc-body { display: flex; flex-direction: column; gap: 3px; flex: 1; min-width: 0; }
+.conf-thumbs { display: flex; flex: none; width: 84px; flex-wrap: wrap; gap: 4px; }
+.conf-thumbs img { width: 40px; height: 40px; object-fit: contain; background: #fff; border-radius: 6px; border: 1px solid var(--line); }
+.conf-tip b { color: var(--brand-2); }
+.conf-signs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(46%, 180px), 1fr)); gap: 10px; }
+.conf-sign { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 10px; text-align: center; background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); color: inherit; }
+.conf-sign img { width: 100%; height: 110px; object-fit: contain; background: #fff; border-radius: 10px; }
+.conf-cue { font-size: .82rem; font-weight: 700; color: var(--brand-2); line-height: 1.3; }
+.conf-meaning { font-size: .82rem; line-height: 1.35; color: var(--ink-2); }
+.conf-game { display: flex; flex-direction: column; gap: 12px; }
+.conf-prompt { margin: 0; font-size: 1.02rem; font-weight: 600; line-height: 1.55; }
+.conf-options { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+.conf-opt { display: grid; place-items: center; padding: 8px; min-height: 120px; background: var(--surface); border: 2px solid var(--line); border-radius: 16px; cursor: pointer; }
+.conf-opt img { width: 100%; height: 100px; object-fit: contain; background: #fff; border-radius: 10px; }
+.conf-opt:not(:disabled):hover { border-color: var(--brand); }
+.conf-opt:disabled { cursor: default; opacity: 1; }
+.conf-opt.right { border-color: var(--good); background: var(--good-soft); } .conf-opt.wrong { border-color: var(--bad); background: var(--bad-soft); }
+.conf-fb { min-height: 1.5em; font-weight: 600; line-height: 1.5; } .conf-fb.ok { color: var(--good-ink); } .conf-fb.bad { color: var(--bad-ink); }
+.conf-next { display: flex; }
+.conf-result { margin: 0; font-size: 1.05rem; font-weight: 600; }
+.conf-practice { display: flex; flex-direction: column; gap: 10px; } .conf-practice > div { display: flex; flex-direction: column; gap: 2px; }
+.conf-nav { justify-content: space-between; }
+@media (min-width: 720px) { .conf-options { grid-template-columns: repeat(4, 1fr); } .conf-drill { flex-direction: row; align-items: center; justify-content: space-between; } }

@@ -38,13 +38,14 @@ function newShareFor() {
 }
 
 /**
- * @param o { title, ids, mode: 'smart'|'seq'|'random', limit, back, kind }
+ * @param o { title, ids, mode: 'smart'|'seq'|'random'|'ordered', limit, back, kind }
  */
 export function startPractice(o) {
   let ids = o.ids.slice();
   if (!ids.length) return false;
   const mode = o.mode || 'smart';
   if (mode === 'seq') ids.sort((a, b) => a - b);
+  else if (mode === 'ordered') { /* the caller's order is the lesson (e.g. look-alike signs one after another) */ }
   else if (mode === 'random') ids = shuffle(ids);
   else ids = smartOrder(ids, o.limit || 0, newShareFor());
   if (o.limit && ids.length > o.limit) ids = ids.slice(0, o.limit);

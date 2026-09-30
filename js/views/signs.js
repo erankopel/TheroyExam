@@ -56,6 +56,7 @@ export function signsView({ key } = {}) {
   paint();
   return { el: h('section', { class: 'page' },
     h('div', { class: 'page-head' }, h('h1', null, 'מילון התמרורים'), h('p', { class: 'muted' }, 'כל תמרור וסימון דרך מהמאגר עם המשמעות הרשמית. במצב כרטיסיות המשמעות מוסתרת – נסו לנחש ואז לחצו.')),
+    D.confusable.length ? h('a', { class: 'card visual-strip', href: '#/confusable' }, icon('cards'), h('div', { class: 'grow' }, h('b', null, 'תמרורים מבלבלים'), h('small', { class: 'muted' }, 'קבוצות של תמרורים דומים, משחק זיהוי ותרגול לפי הטעויות שלכם')), icon('chevL')) : null,
     h('div', { class: 'searchbar card' }, icon('search'), search),
     h('div', { class: 'row gap wrap' }, modeBtn,
       h('button', { class: 'btn btn-primary', onclick: () => startPractice({ title: 'חידון תמרורים', ids: items.filter((i) => unitKey === 'all' || i.unit === unitKey).map((i) => i.q.id), mode: 'random', limit: 15, back: '/signs' }) }, icon('play'), 'חידון')),

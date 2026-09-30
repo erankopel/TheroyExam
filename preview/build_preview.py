@@ -19,7 +19,7 @@ import argparse, datetime, html, json, os, pathlib, re, shutil, subprocess, sys,
 
 TEXT_EXT = {'.js', '.html', '.css', '.json', '.webmanifest', '.txt', '.svg'}
 COPY = ['index.html', 'manifest.webmanifest', 'sw.js', 'css', 'js', 'fonts', 'img']
-DATA = ['questions.json', 'units.json', 'explanations.json']   # explanations.json is optional
+DATA = ['questions.json', 'units.json', 'explanations.json', 'confusable.json']   # the last two are optional
 OLD, NEW = 'road26', 'road26pv'
 
 
@@ -67,7 +67,7 @@ def build(src, stage, sha, ref, short):
         p = src / 'data' / name
         if p.is_file():
             shutil.copy2(p, stage / 'data' / name)
-        elif name != 'explanations.json':
+        elif name not in ('explanations.json', 'confusable.json'):
             raise FileNotFoundError(f'data/{name}')
     (stage / 'tools').mkdir()
     shutil.copy2(src / 'tools' / 'build_sw.py', stage / 'tools' / 'build_sw.py')
@@ -136,7 +136,7 @@ def build(src, stage, sha, ref, short):
     if 'id="preview-badge"' not in (stage / 'index.html').read_text(encoding='utf-8'):
         raise AssertionError('badge missing')
     json.loads((stage / 'manifest.webmanifest').read_text(encoding='utf-8'))
-    for name in ('questions.json', 'units.json') + (('explanations.json',) if (stage / 'data' / 'explanations.json').is_file() else ()):
+    for name in ('questions.json', 'units.json') + tuple(n for n in ('explanations.json', 'confusable.json') if (stage / 'data' / n).is_file()):
         json.loads((stage / 'data' / name).read_text(encoding='utf-8'))
 
 

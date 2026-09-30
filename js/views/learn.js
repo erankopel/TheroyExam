@@ -86,6 +86,7 @@ export function unitView({ key }) {
       h('button', { class: 'btn btn-lg btn-ghost', onclick: () => startPractice({ title: u.title, ids, mode: 'seq', back: `/unit/${key}` }) }, icon('list'), 'כל היחידה לפי הסדר'),
       c.weak ? h('button', { class: 'btn btn-lg btn-ghost', onclick: () => startPractice({ title: `טעויות – ${u.title}`, ids: ids.filter((id) => store.statusOf(id) === 'weak'), mode: 'random', back: `/unit/${key}`, kind: 'mistakes' }) }, icon('refresh'), 'תיקון טעויות') : null,
       signs ? h('a', { class: 'btn btn-lg btn-ghost', href: `#/signs/${key}` }, icon('cards'), 'מילון התמרורים') : null,
+      signs && D.confusable.length ? h('a', { class: 'btn btn-lg btn-ghost', href: '#/confusable' }, icon('target'), 'תמרורים מבלבלים') : null,
       visualForUnit(key).map((v) => h('a', { class: 'btn btn-lg btn-ghost', href: `#/visual/${v.key}` }, icon('eye'), `איור: ${v.title}`))),
     summaryCard(u),
     h('div', { class: 'card' }, h('div', { class: 'section-head tight' }, h('h2', { class: 'sub' }, 'כל השאלות ביחידה'), ftabs), list),

@@ -34,6 +34,7 @@ for (const theme of ['light', 'dark']) {
   check(`${theme}: the safety-systems unit links to its infographic`, (await p.$('a[href="#/visual/safety-systems"]')) !== null);
   await go(p, '#/visual'); await p.waitForSelector('.visual-card');
   check(`${theme}: index lists three infographics`, (await p.$$('.visual-card')).length === 3);
+  check(`${theme}: index cards are laid out as rows (flex)`, await p.$eval('.visual-card', (e) => getComputedStyle(e).display === 'flex'));
   await axe(p, `${theme}: index`);
 
   // --- stopping distance

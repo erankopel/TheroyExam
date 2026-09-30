@@ -11,6 +11,7 @@ import { reviewView } from './views/review.js';
 import { signsView } from './views/signs.js';
 import { statsView } from './views/stats.js';
 import { visualIndexView, visualView } from './views/visual.js';
+import { confusableIndexView, confusableView } from './views/confusable.js';
 import { searchView } from './views/search.js';
 import { settingsView } from './views/settings.js';
 import { maybeOnboard } from './views/onboarding.js';
@@ -24,6 +25,7 @@ const ROUTES = [
   ['/exam', examIntroView, 'exam'], ['/exam/run', examRunView, 'exam', true], ['/exam/result/:idx', examResultView, 'exam'],
   ['/review', reviewView, 'review'], ['/review/:tab', reviewView, 'review'],
   ['/signs', signsView, 'signs'], ['/signs/:key', signsView, 'signs'],
+  ['/confusable', confusableIndexView, 'signs'], ['/confusable/:id', confusableView, 'signs'],
   ['/stats', statsView, 'stats'], ['/search', searchView, 'search'], ['/settings', settingsView, 'settings'],
 ].map(([path, view, tab, focus]) => ({ view, tab, focus: !!focus, keys: [...path.matchAll(/:(\w+)/g)].map((m) => m[1]), re: new RegExp('^' + path.replace(/:\w+/g, '([^/]+)') + '$') }));
 

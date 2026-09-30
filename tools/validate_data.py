@@ -43,6 +43,34 @@ if ex_path.exists():
         for prob in lint(v.get("e", ""), qmap[int(k)], "e") + lint(v.get("k", ""), qmap[int(k)], "k"):
             errors.append(f"explanation {k}: {prob}")
     print(f"{len(ex)} explanations ({len(ex) * 100 // len(qs)}% of the bank)")
+# groups of easily confused signs (optional file): every sign must be a real sign question with a picture
+cf_path = ROOT / "data/confusable.json"
+if cf_path.exists():
+    import re
+    qmap = {q["id"]: q for q in qs}
+    groups = json.loads(cf_path.read_text(encoding="utf-8"))["groups"]
+    gids = set()
+    for g in groups:
+        gid = g.get("id", "?")
+        if gid in gids or not re.fullmatch(r"[a-z][a-z0-9-]*", gid): errors.append(f"confusable group id {gid!r}: duplicate or not url-safe")
+        gids.add(gid)
+        for field, limit in (("title", 8), ("tip", 60)):
+            text = g.get(field, "")
+            if not text.strip() or len(text.split()) > limit: errors.append(f"confusable {gid}: {field} is empty or longer than {limit} words")
+        if len(g["signs"]) < 2: errors.append(f"confusable {gid}: needs at least two signs")
+        imgs = set()
+        for s in g["signs"]:
+            q = qmap.get(s["q"])
+            if not q or not q.get("sg") or not q.get("img"): errors.append(f"confusable {gid}: question {s['q']} is not a sign-meaning question with a picture"); continue
+            if q["img"] in imgs: errors.append(f"confusable {gid}: the picture of question {s['q']} appears twice")
+            imgs.add(q["img"])
+            cue = s.get("cue", "")
+            if not cue.strip() or len(cue.split()) > 14: errors.append(f"confusable {gid}/{s['q']}: cue is empty or too long")
+            for prob in lint(cue, q, "k"):
+                errors.append(f"confusable {gid}/{s['q']}: {prob}")
+        for prob in lint(g.get("tip", ""), None, "e") + lint(g.get("title", ""), None, "k"):
+            errors.append(f"confusable {gid}: {prob}")
+    print(f"{len(groups)} confusable-sign groups, {sum(len(g['signs']) for g in groups)} sign entries")
 print(f"{len(qs)} questions, {len(units)} units, {sum(1 for q in qs if q.get('img'))} with images")
 for w in warns: print("warn:", w)
 for e in errors: print("ERROR:", e)
