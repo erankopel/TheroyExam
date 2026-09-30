@@ -2,7 +2,7 @@
 import { h, icon, sheet, add } from '../ui.js';
 import { D } from '../data.js';
 import { store } from '../ctx.js';
-import { questionCard } from '../quiz.js';
+import { questionCard, explanationBox } from '../quiz.js';
 
 const STATUS_LABEL = { new: 'טרם נענתה', weak: 'טעיתם לאחרונה', learning: 'בלמידה', strong: 'שולטים' };
 
@@ -17,7 +17,7 @@ export function openQuestion(id, ids = [id]) {
         onFlag: () => store.toggleFlag(q.id), showTts: store.state.profile.tts,
       });
       const rec = store.rec(q.id);
-      add(body, card.el,
+      add(body, card.el, explanationBox(q, { open: true }),
         h('div', { class: 'browse-meta' },
           h('span', { class: `dot dot-${store.statusOf(q.id)}` }), STATUS_LABEL[store.statusOf(q.id)],
           rec ? h('span', { class: 'muted' }, ` · ${rec.r} נכון, ${rec.w} שגוי`) : null),

@@ -58,6 +58,7 @@ jobs:
           mkdir -p _site/data
           cp -r index.html manifest.webmanifest sw.js .nojekyll css js fonts img _site/
           cp data/questions.json data/units.json _site/data/
+          [ -f data/explanations.json ] && cp data/explanations.json _site/data/ || true
           [ -f CNAME ] && cp CNAME _site/ || true
       - uses: actions/configure-pages@v5
         if: steps.pages.outputs.enabled == 'true'

@@ -19,6 +19,19 @@ export async function loadData() {
   return D;
 }
 
+// Study explanations (unofficial, generated from the bank and verified): loaded in the background, optional.
+export const X = { map: new Map(), ready: null };
+export function loadExplanations() {
+  if (!X.ready) {
+    X.ready = fetch('data/explanations.json')
+      .then((r) => { if (!r.ok) throw new Error('explanations'); return r.json(); })
+      .then((o) => { X.map = new Map(Object.entries(o).map(([id, v]) => [Number(id), v])); return X.map; })
+      .catch(() => { X.ready = null; return X.map; }); // offline before the first cache fill: try again on the next answer
+  }
+  return X.ready;
+}
+export const explanationOf = (id) => X.map.get(id) || null;
+
 export const imgUrl = (q) => (q.img ? `img/q/${q.img}` : null);
 export const unitIcon = (u) => `img/units/${u.key}.svg`;
 

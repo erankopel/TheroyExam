@@ -61,6 +61,7 @@ const P = {
   trophy: '<path d="M7 4h10v5a5 5 0 0 1-10 0z"/><path d="M7 6H4v1a4 4 0 0 0 4 4"/><path d="M17 6h3v1a4 4 0 0 1-4 4"/><path d="M12 14v4"/><path d="M8 21h8"/><path d="M9 18h6"/>',
   target: '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>',
   list: '<path d="M8 6h13M8 12h13M8 18h13"/><path d="M3.5 6h.01M3.5 12h.01M3.5 18h.01"/>',
+  bulb: '<path d="M9 18h6"/><path d="M10 21h4"/><path d="M12 3a6 6 0 0 0-3.500 10.900c.6.500 1 1.200 1 2.100h5c0-.9.400-1.600 1-2.100A6 6 0 0 0 12 3z"/>',
   info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/>',
   play: '<path d="M7 4l13 8-13 8z"/>',
   shuffle: '<path d="M3 7h3.5c3 0 4.5 2 6 5s3 5 6 5H21"/><path d="M18 14l3 3-3 3"/><path d="M3 17h3.5c1.5 0 2.6-.5 3.6-1.4"/><path d="M13 8.2C14 7.4 15.100 7 16.500 7H21"/><path d="M18 4l3 3-3 3"/>',

@@ -363,3 +363,19 @@ html:has(body.focus) { scroll-padding-top: 68px; scroll-padding-bottom: 130px; }
 .qrow .dot-strong::after { content: '✓'; } .qrow .dot-weak::after { content: '!'; } .qrow .dot-learning::after { content: '•'; color: #063; } .qrow .dot-new { color: var(--ink-3); }
 h2.sub { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; } .section-head h2.sub, .summary-card summary h2.sub { margin: 0; }
 .summary-card summary h2.sub { color: var(--ink); flex: 1; }
+
+/* ---- explanation under the answers -------------------------------------------------- */
+.expl { margin-top: 12px; border: 1px solid var(--line); border-radius: 16px; background: var(--surface); border-inline-start: 5px solid var(--brand); scroll-margin-bottom: 96px; }
+.expl > summary, .expl-head { display: flex; align-items: center; gap: 9px; padding: 11px 14px; font-weight: 700; font-size: .95rem; color: var(--brand-2); cursor: pointer; list-style: none; }
+.expl-head { cursor: default; padding: 0 0 4px; }
+.expl > summary::-webkit-details-marker { display: none; }
+.expl > summary .ic, .expl-head .ic { flex: none; }
+.expl-chev { margin-inline-start: auto; color: var(--ink-3); transition: transform .2s; }
+.expl[open] > summary .expl-chev { transform: rotate(-90deg); }
+.expl-body { padding: 0 14px 12px; }
+.expl-plain { border: 0; border-radius: 10px; background: var(--brand-soft); padding: 10px 12px; margin-top: 4px; }
+.expl-text { margin: 0 0 8px; line-height: 1.65; font-size: .97rem; color: var(--ink); }
+.expl-k { margin: 0 0 8px; padding: 7px 10px; border-radius: 10px; background: var(--brand-soft); color: var(--ink); font-size: .92rem; line-height: 1.5; }
+.expl-plain .expl-k { background: var(--surface); }
+.expl-note { margin: 0; font-size: .76rem; color: var(--ink-3); line-height: 1.4; }
+@media (prefers-reduced-motion: reduce) { .expl-chev { transition: none; } }

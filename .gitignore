@@ -3,3 +3,4 @@ _site/
 *.log
 .DS_Store
 data/questions_raw.json
+__pycache__/

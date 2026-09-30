@@ -1,7 +1,7 @@
 // Shared question card used by practice, exam, review and the single-question viewer.
 import { h, icon, sheet } from './ui.js';
 import { LETTERS, CATS } from './config.js';
-import { D, imgUrl } from './data.js';
+import { D, imgUrl, explanationOf } from './data.js';
 import { shuffle } from './ui.js';
 
 /** Display order of the 4 answers (array of original indexes). Position-dependent questions keep the official order. */
@@ -87,4 +87,23 @@ export function questionCard(q, o) {
     update(patch) { Object.assign(st, patch); paint(); },
     buttons: btns,
   };
+}
+
+// ---- explanation ------------------------------------------------------------------
+/**
+ * The study explanation of a question (unofficial, written from the bank), or null when there is none.
+ * @param o { open: expanded by default, plain: no collapsible wrapper (used inside lists) }
+ */
+export function explanationBox(q, { open = false, plain = false } = {}) {
+  const x = explanationOf(q.id);
+  if (!x || !x.e) return null;
+  const body = [
+    h('p', { class: 'expl-text' }, x.e),
+    x.k ? h('p', { class: 'expl-k' }, h('strong', null, 'לזכור: '), x.k) : null,
+    h('p', { class: 'expl-note' }, 'הסבר לימודי לא רשמי, שנכתב על בסיס המאגר. במקרה של סתירה המאגר הרשמי קובע.'),
+  ];
+  if (plain) return h('div', { class: 'expl expl-plain' }, h('div', { class: 'expl-head' }, icon('bulb'), h('span', null, 'הסבר')), ...body);
+  return h('details', { class: 'expl', open },
+    h('summary', null, icon('bulb'), h('span', null, 'הסבר'), icon('chevL', 'expl-chev')),
+    h('div', { class: 'expl-body' }, ...body));
 }

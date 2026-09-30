@@ -1,9 +1,9 @@
 // Practice runner: one question at a time with instant feedback + end-of-round summary.
 import { h, icon, clear, fmtDuration, confirmDialog, announce } from '../ui.js';
-import { D } from '../data.js';
+import { D, loadExplanations } from '../data.js';
 import { store, go } from '../ctx.js';
 import { session, startPractice, restart } from '../session.js';
-import { questionCard, makeOrder, speakQuestion, stopSpeaking } from '../quiz.js';
+import { questionCard, makeOrder, speakQuestion, stopSpeaking, explanationBox } from '../quiz.js';
 import { checkBadges } from '../badges.js';
 import { confetti } from '../fx.js';
 import { CATS } from '../config.js';
@@ -73,6 +73,7 @@ export function practiceView() {
     checkBadges(store, { combo: S.bestCombo, units: S.i % 5 === 4 });
     if (navigator.vibrate && !ok) navigator.vibrate(60);
     announce(ok ? 'נכון' : `לא נכון. התשובה הנכונה: ${q.a[q.c]}`);
+    showExplanation(q, ok, S.i);
     const last = S.i + 1 >= S.queue.length;
     clear(foot); foot.className = `session-foot fb ${ok ? 'fb-good' : 'fb-bad'}`;
     foot.append(
@@ -84,6 +85,18 @@ export function practiceView() {
       h('button', { class: 'btn btn-lg btn-primary fb-next', onclick: next, autofocus: true }, last ? 'לסיכום' : 'המשך', icon('next')));
     foot.querySelector('.fb-next').focus({ preventScroll: true });
     if (S.combo && S.combo % 5 === 0) confetti(0.6);
+  }
+
+  /** Under the answers: open after a mistake (and scrolled into view), collapsed after a correct answer. */
+  function showExplanation(q, ok, at) {
+    const put = () => {
+      if (S.i !== at || !card || body.querySelector('.expl')) return;
+      const ex = explanationBox(q, { open: !ok });
+      if (!ex) return;
+      body.append(ex);
+      if (!ok) ex.scrollIntoView({ block: 'nearest', behavior: window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    };
+    if (explanationBox(q)) put(); else loadExplanations().then(put); // first answer before the file arrived
   }
 
   function next() {
@@ -154,5 +167,6 @@ export function wrongItem(q, pick) {
     h('div', { class: 'wi-body' },
       q.img ? h('img', { class: 'wi-img', src: `img/q/${q.img}`, alt: 'איור לשאלה', loading: 'lazy' }) : null,
       pick != null && pick >= 0 && pick !== q.c ? h('p', { class: 'wi-yours' }, icon('x'), h('span', null, 'הבחירה שלכם: ', q.a[pick])) : null,
-      h('p', { class: 'wi-right' }, icon('check'), h('span', null, 'התשובה הנכונה: ', h('strong', null, q.a[q.c])))));
+      h('p', { class: 'wi-right' }, icon('check'), h('span', null, 'התשובה הנכונה: ', h('strong', null, q.a[q.c]))),
+      explanationBox(q, { plain: true })));
 }

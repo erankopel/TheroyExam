@@ -1,6 +1,6 @@
 // Bootstrap: data loading, hash router, app shell, service worker.
 import { h, icon, clear, toast, $, closeAllSheets } from './ui.js';
-import { loadData, D } from './data.js';
+import { loadData, loadExplanations, D } from './data.js';
 import { store, applyProfile } from './ctx.js';
 import { APP } from './config.js';
 import { homeView } from './views/home.js';
@@ -95,6 +95,7 @@ async function boot() {
   render();
   registerSW();
   maybeOnboard(render);
+  loadExplanations();
 }
 
 // make sure the debounced save reaches storage when the tab is hidden/closed

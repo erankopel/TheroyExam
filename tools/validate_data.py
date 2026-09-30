@@ -31,6 +31,18 @@ for u in units:
     for f in u.get("summary", []):
         for r in f.get("refs", []):
             if r not in seen: errors.append(f"unit {u['key']}: summary ref to unknown question {r}")
+# study explanations (optional file): known ids and the copy rules the app relies on
+ex_path = ROOT / "data/explanations.json"
+if ex_path.exists():
+    sys.path.insert(0, str(Path(__file__).resolve().parent))
+    from merge_explanations import lint
+    ex = json.loads(ex_path.read_text(encoding="utf-8"))
+    qmap = {q["id"]: q for q in qs}
+    for k, v in ex.items():
+        if not k.isdigit() or int(k) not in qmap: errors.append(f"explanation for unknown question {k}"); continue
+        for prob in lint(v.get("e", ""), qmap[int(k)], "e") + lint(v.get("k", ""), qmap[int(k)], "k"):
+            errors.append(f"explanation {k}: {prob}")
+    print(f"{len(ex)} explanations ({len(ex) * 100 // len(qs)}% of the bank)")
 print(f"{len(qs)} questions, {len(units)} units, {sum(1 for q in qs if q.get('img'))} with images")
 for w in warns: print("warn:", w)
 for e in errors: print("ERROR:", e)
