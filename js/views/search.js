@@ -28,7 +28,7 @@ export function searchView() {
       if (terms.every((t) => it.t.includes(t))) hits.push(it.q);
       if (hits.length > 300) break;
     }
-    out.append(h('p', { class: 'muted small' }, hits.length ? `${hits.length >= 300 ? '300+' : hits.length} תוצאות` : 'לא נמצאו תוצאות'));
+    out.append(h('p', { class: 'muted small' }, hits.length === 0 ? 'לא נמצאו תוצאות' : hits.length === 1 ? 'תוצאה אחת' : `${hits.length >= 300 ? '300+' : hits.length} תוצאות`));
     const ids = hits.slice(0, 60).map((q) => q.id);
     hits.slice(0, 60).forEach((q) => out.append(h('button', { class: 'card result-row', onclick: () => openQuestion(q.id, ids) },
       h('span', { class: 'chip chip-cat', style: { '--cc': CATS[q.cat]?.color } }, D.unitByKey.get(q.u)?.title || CATS[q.cat]?.title),

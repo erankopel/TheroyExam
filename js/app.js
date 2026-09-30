@@ -1,5 +1,5 @@
 // Bootstrap: data loading, hash router, app shell, service worker.
-import { h, icon, clear, toast, $ } from './ui.js';
+import { h, icon, clear, toast, $, closeAllSheets } from './ui.js';
 import { loadData, D } from './data.js';
 import { store, applyProfile } from './ctx.js';
 import { APP } from './config.js';
@@ -52,7 +52,7 @@ function shell() {
 }
 
 function match(path) {
-  for (const r of ROUTES) { const m = r.re.exec(path); if (m) { const params = {}; r.keys.forEach((k, i) => (params[k] = decodeURIComponent(m[i + 1]))); return { r, params }; } }
+  for (const r of ROUTES) { const m = r.re.exec(path); if (m) { const params = {}; r.keys.forEach((k, i) => { try { params[k] = decodeURIComponent(m[i + 1]); } catch (e) { params[k] = m[i + 1]; } }); return { r, params }; } }
   return null;
 }
 
@@ -60,6 +60,7 @@ let lastPath = null;
 function render() {
   const path = (location.hash.replace(/^#/, '') || '/').split('?')[0];
   const m = match(path) || match('/');
+  closeAllSheets(); // a dialog belongs to the screen that opened it
   if (current && current.destroy) { try { current.destroy(); } catch (e) { console.error(e); } }
   clear(viewEl);
   let out;

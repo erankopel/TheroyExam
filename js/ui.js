@@ -18,6 +18,8 @@ export function h(tag, attrs, ...kids) {
   append(el, kids);
   return el;
 }
+/** Null-safe append (the DOM's own append() would print the text "null"). */
+export function add(parent, ...kids) { append(parent, kids); return parent; }
 function append(el, kids) {
   for (const k of kids) {
     if (k == null || k === false) continue;
@@ -96,18 +98,42 @@ export function toast(msg, { tone = 'info', ms = 2600, icon: ic } = {}) {
 }
 
 // ---- modal / bottom sheet ---------------------------------------------------------
+const openSheets = []; // stack of { close } – the last one is the top-most
+export function closeAllSheets() { [...openSheets].forEach((s) => s.close(true)); }
+
 export function sheet(build, { title = '', onClose } = {}) {
   const host = document.getElementById('overlay');
-  const close = () => { back.classList.remove('in'); setTimeout(() => { back.remove(); onClose && onClose(); }, 200); document.removeEventListener('keydown', onKey); };
-  const onKey = (e) => { if (e.key === 'Escape') close(); };
+  const opener = document.activeElement;
+  let closed = false;
+  const entry = { close: (instant) => {
+    if (closed) return; closed = true;
+    const i = openSheets.indexOf(entry); if (i >= 0) openSheets.splice(i, 1);
+    document.removeEventListener('keydown', onKey);
+    const done = () => { back.remove(); onClose && onClose(); if (opener && opener.isConnected && typeof opener.focus === 'function') opener.focus({ preventScroll: true }); };
+    if (instant) done(); else { back.classList.remove('in'); setTimeout(done, 200); }
+  } };
+  const close = () => entry.close(false);
+  // Only the top-most sheet reacts to Escape; Tab is kept inside the dialog.
+  const onKey = (e) => {
+    if (openSheets[openSheets.length - 1] !== entry) return;
+    if (e.key === 'Escape') { e.stopPropagation(); close(); return; }
+    if (e.key === 'Tab') {
+      const f = [...panel.querySelectorAll('button, [href], input, select, textarea, summary, [tabindex]:not([tabindex="-1"])')].filter((n) => !n.disabled && n.offsetParent !== null);
+      if (!f.length) return;
+      const first = f[0], last = f[f.length - 1];
+      if (e.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && (document.activeElement === last || !panel.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+    }
+  };
   const body = h('div', { class: 'sheet-body' });
-  const panel = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': title },
+  const panel = h('div', { class: 'sheet', role: 'dialog', 'aria-modal': 'true', 'aria-label': title || 'חלון', tabindex: '-1' },
     h('div', { class: 'sheet-head' }, h('h3', null, title), h('button', { class: 'btn btn-icon btn-ghost', 'aria-label': 'סגירה', onclick: close }, icon('x'))),
     body);
   const back = h('div', { class: 'sheet-back', onclick: (e) => { if (e.target === back) close(); } }, panel);
   host.append(back);
+  openSheets.push(entry);
   build(body, close);
-  requestAnimationFrame(() => back.classList.add('in'));
+  requestAnimationFrame(() => { back.classList.add('in'); panel.focus({ preventScroll: true }); });
   document.addEventListener('keydown', onKey);
   return close;
 }
@@ -150,3 +176,6 @@ export function plural(n, one, many, two) {
   if (n === 2 && two) return two;
   return many;
 }
+
+/** Hebrew counted noun: countHe(1,'שאלה אחת','שתי שאלות','שאלות') -> 'שאלה אחת'; 2 -> 'שתי שאלות'; 7 -> '7 שאלות'. */
+export function countHe(n, one, two, many) { return n === 1 ? one : n === 2 ? two : `${n} ${many}`; }

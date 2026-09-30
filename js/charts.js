@@ -38,7 +38,7 @@ export function gaugeSvg(frac, { label = '', sub = '', tone = 'brand', mark = nu
 
 /** Stacked status bar for a set of questions */
 export function statusBar(c, total) {
-  const seg = (k, n) => n ? h('i', { class: `seg seg-${k}`, style: { flexGrow: n }, title: `${{ strong: 'שולטים', learning: 'בלמידה', weak: 'לחזרה', new: 'חדשות' }[k]}: ${n}` }) : null;
+  const seg = (k, n) => n ? h('i', { class: `seg seg-${k}`, style: { flexGrow: n }, title: `${{ strong: 'שולטים', learning: 'בלמידה', weak: 'טעויות', new: 'חדשות' }[k]}: ${n}` }) : null;
   return h('div', { class: 'statusbar', role: 'img', 'aria-label': `שולטים ${c.strong} מתוך ${total}` },
     seg('strong', c.strong), seg('learning', c.learning), seg('weak', c.weak), seg('new', c.new));
 }

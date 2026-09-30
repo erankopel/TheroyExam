@@ -1,4 +1,4 @@
-import { h, icon, fmtNum, fmtDuration, pct, toast } from '../ui.js';
+import { h, icon, fmtNum, fmtDuration, pct, toast, countHe } from '../ui.js';
 import { D, idsForLic, unitsForLic, unitIdsForLic } from '../data.js';
 import { store } from '../ctx.js';
 import { APP, CATS, CAT_ORDER } from '../config.js';
@@ -26,7 +26,7 @@ export function statsView() {
       `• נענו ${fmtNum(answered)} שאלות (${pct(right, answered)}% נכון)`, `• כיסוי המאגר: ${pct(all, ids.length)}%`,
       `• סיכוי משוער לעבור: ${Math.round(est.pass * 100)}% (ציון צפוי ${est.expected.toFixed(1)}/${APP.exam.questions})`,
       last ? `• מבחן דמה אחרון: ${last.correct}/${last.total} ${last.passed ? '✅' : '❌'}` : null,
-      `• רצף נוכחי: ${store.streak()} ימים`].filter(Boolean).join('\n');
+      `• רצף נוכחי: ${countHe(store.streak(), 'יום אחד', 'יומיים', 'ימים')}`].filter(Boolean).join('\n');
   };
   async function share() {
     const text = shareText();
@@ -38,7 +38,7 @@ export function statsView() {
     h('div', { class: 'page-head row between' }, h('div', null, h('h1', null, 'התקדמות'), h('p', { class: 'muted' }, 'תמונת מצב מלאה')), h('button', { class: 'btn btn-ghost', onclick: share }, icon('share'), 'שיתוף סיכום')),
     h('div', { class: 'grid grid-4 kpis' },
       kpi(fmtNum(answered), 'שאלות נענו'), kpi(answered ? pct(right, answered) + '%' : '–', 'אחוז הצלחה'),
-      kpi(`${store.streak()}`, 'ימים ברצף', `שיא: ${store.bestStreak()}`), kpi(fmtDuration(ms / 1000), 'זמן לימוד', `${days} ימי לימוד`)),
+      kpi(`${store.streak()}`, 'ימים ברצף', `שיא: ${store.bestStreak()}`), kpi(fmtDuration(ms / 1000), 'זמן לימוד', days === 1 ? 'יום לימוד אחד' : `${days} ימי לימוד`)),
     h('div', { class: 'card' }, h('h3', null, 'פעילות'), heatmap(st.log, { goal: st.profile.dailyGoal }), h('div', { class: 'hm-legend' }, h('small', { class: 'muted' }, 'פחות'), ...[0, 1, 2, 3, 4].map((l) => h('i', { class: `hm-cell hm-${l}` })), h('small', { class: 'muted' }, 'יותר'))),
     h('div', { class: 'card' }, h('h3', null, 'מבחני דמה'),
       exams.length ? [examBars(exams), h('p', { class: 'muted small' }, `${exams.filter((e) => e.passed).length} מתוך ${exams.length} מבחנים אחרונים עברו · ציון ממוצע ${(exams.reduce((s, e) => s + e.correct, 0) / exams.length).toFixed(1)}`)] : h('p', { class: 'muted' }, 'עוד לא בוצע מבחן דמה. ', h('a', { class: 'link', href: '#/exam' }, 'לצאת לדרך'))),

@@ -1,5 +1,5 @@
 // Persistent learner state + spaced-repetition (Leitner boxes). Pure logic, storage is injected so it can be unit-tested.
-import { APP } from './config.js';
+import { APP, LICENSES } from './config.js';
 
 const DAY = 86400000;
 export const INTERVALS = [0, 1, 3, 7, 14, 30]; // days until next review, per Leitner box 0..5
@@ -36,17 +36,51 @@ export function createStore(storage, now = () => Date.now()) {
     } catch (e) { /* corrupted or blocked storage: start fresh */ }
     return defaultState();
   }
+  function isObj(x) { return !!x && typeof x === 'object' && !Array.isArray(x); } // function declaration: load() runs before this line
+  /** Fill defaults and sanitise anything a hand-edited / old backup could get wrong. */
   function migrate(s) {
     const d = defaultState();
+    const prof = { ...d.profile, ...(isObj(s.profile) ? s.profile : {}) };
+    if (!LICENSES.some((l) => l.key === prof.lic)) prof.lic = 'B';
+    prof.fontScale = Math.min(1.3, Math.max(1, Number(prof.fontScale) || 1));
+    prof.dailyGoal = [10, 20, 30, 50].includes(Number(prof.dailyGoal)) ? Number(prof.dailyGoal) : 20;
+    prof.examExtra = [0, 25, 50].includes(Number(prof.examExtra)) ? Number(prof.examExtra) : 0;
+    if (!['auto', 'light', 'dark'].includes(prof.theme)) prof.theme = 'auto';
+    prof.name = typeof prof.name === 'string' ? prof.name.slice(0, 24) : '';
+    prof.examDate = /^\d{4}-\d{2}-\d{2}$/.test(prof.examDate || '') ? prof.examDate : '';
     return {
-      ...d, ...s,
-      profile: { ...d.profile, ...(s.profile || {}) },
-      q: s.q || {}, flags: s.flags || [], exams: s.exams || [], log: s.log || {}, badges: s.badges || {},
+      ...d, ...s, profile: prof,
+      q: isObj(s.q) ? s.q : {}, log: isObj(s.log) ? s.log : {}, badges: isObj(s.badges) ? s.badges : {},
+      flags: Array.isArray(s.flags) ? s.flags.filter(Number.isInteger) : [],
+      exams: Array.isArray(s.exams) ? s.exams.filter(isObj) : [],
+      xp: Number(s.xp) || 0,
+      activeExam: isObj(s.activeExam) ? s.activeExam : null,
     };
   }
-  let saveTimer = null;
+  // Unsaved additive changes of THIS tab (xp / per-day counters), so a merge with another tab's state can add them up.
+  let pend = { xp: 0, log: {} };
+  /** Combine this tab's state `a` (with unsaved changes) with the state `b` another tab saved. */
+  function mergeStates(a, b) {
+    const out = { ...a, q: { ...b.q }, log: JSON.parse(JSON.stringify(b.log)), badges: { ...b.badges } };
+    for (const [id, r] of Object.entries(a.q)) {
+      const o = out.q[id];
+      if (!o || (r.r + r.w) > (o.r + o.w) || ((r.r + r.w) === (o.r + o.w) && r.t >= o.t)) out.q[id] = r;
+    }
+    for (const [k, d] of Object.entries(pend.log)) {
+      const l = out.log[k] || (out.log[k] = { n: 0, r: 0, x: 0, ms: 0 });
+      l.n += d.n; l.r += d.r; l.x += d.x; l.ms += d.ms;
+    }
+    for (const [k, t] of Object.entries(a.badges)) out.badges[k] = Math.min(t, out.badges[k] || t);
+    out.flags = [...new Set([...a.flags, ...b.flags])];
+    const seen = new Set(); out.exams = [...a.exams, ...b.exams].filter((e) => !seen.has(e.ts) && seen.add(e.ts)).sort((x, y) => x.ts - y.ts);
+    out.xp = b.xp + pend.xp;
+    out.activeExam = a.activeExam || b.activeExam;
+    return out;
+  }
+  let saveTimer = null, dirty = false;
   function persist(immediate = false) {
-    const write = () => { saveTimer = null; try { storage && storage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* quota / private mode */ } };
+    dirty = true;
+    const write = () => { saveTimer = null; dirty = false; pend = { xp: 0, log: {} }; try { storage && storage.setItem(KEY, JSON.stringify(state)); } catch (e) { /* quota / private mode */ } };
     if (immediate) { if (saveTimer) clearTimeout(saveTimer); write(); return; }
     if (!saveTimer) saveTimer = setTimeout(write, 150);
   }
@@ -56,7 +90,16 @@ export function createStore(storage, now = () => Date.now()) {
   const api = {
     get state() { return state; },
     subscribe(fn) { listeners.add(fn); return () => listeners.delete(fn); },
-    flush() { persist(true); },
+    /** Write pending changes now. A tab that changed nothing must never overwrite what another tab saved. */
+    flush() { if (dirty) persist(true); },
+    /** Another tab saved: adopt its state (merging in anything this tab has not written yet). */
+    reloadFromStorage() {
+      let remote; try { const raw = storage && storage.getItem(KEY); remote = raw ? migrate(JSON.parse(raw)) : null; } catch (e) { return; }
+      if (!remote) return;
+      state = dirty ? mergeStates(state, remote) : remote;
+      if (dirty) persist(true);
+      emit();
+    },
     today() { return dayNum(now()); },
 
     // ---- profile -------------------------------------------------------
@@ -76,7 +119,9 @@ export function createStore(storage, now = () => Date.now()) {
     recordAnswer(id, ok, { ms = 0, xpBonus = 0 } = {}) {
       const t = now(), today = dayNum(t);
       const r = state.q[id] || (state.q[id] = { b: 0, d: today, r: 0, w: 0, l: -1, t: 0 });
-      if (ok) { r.r++; r.b = Math.min(MAX_BOX, r.b + 1); r.d = today + INTERVALS[r.b]; }
+      // A correct answer only advances the box when the question was actually due (or new / just failed):
+      // re-answering the same question several times in one sitting is cramming, not retention.
+      if (ok) { r.r++; if (r.d <= today) { r.b = Math.min(MAX_BOX, r.b + 1); r.d = today + INTERVALS[r.b]; } }
       else { r.w++; r.b = 0; r.d = today; }
       r.l = ok ? 1 : 0; r.t = t;
       const gain = (ok ? XP.right : XP.wrong) + xpBonus;
@@ -84,6 +129,8 @@ export function createStore(storage, now = () => Date.now()) {
       const k = dayKey(t);
       const day = state.log[k] || (state.log[k] = { n: 0, r: 0, x: 0, ms: 0 });
       day.n++; if (ok) day.r++; day.x += gain; day.ms += Math.min(ms, 120000);
+      pend.xp += gain; const pd = pend.log[k] || (pend.log[k] = { n: 0, r: 0, x: 0, ms: 0 });
+      pd.n++; if (ok) pd.r++; pd.x += gain; pd.ms += Math.min(ms, 120000);
       commit(false);
       return { xp: gain, rec: r };
     },
@@ -107,9 +154,11 @@ export function createStore(storage, now = () => Date.now()) {
     streak() {
       const min = APP.streakMinAnswers;
       const counted = (ts) => (state.log[dayKey(ts)]?.n || 0) >= min;
+      // Step by calendar day (noon anchor), not by 24h, so DST changes cannot skip or repeat a day.
+      const prev = (ts) => { const d = new Date(ts); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() - 1); return d.getTime(); };
       let t = now(), s = 0;
-      if (!counted(t)) t -= DAY; // today may not have reached the minimum yet – the streak is still alive
-      while (counted(t)) { s++; t -= DAY; if (s > 4000) break; }
+      if (!counted(t)) t = prev(t); // today may not have reached the minimum yet – the streak is still alive
+      while (counted(t)) { s++; t = prev(t); if (s > 4000) break; }
       return s;
     },
     bestStreak() {
@@ -134,13 +183,15 @@ export function createStore(storage, now = () => Date.now()) {
 
     // ---- backup --------------------------------------------------------
     exportJSON() { return JSON.stringify({ app: APP.storageKey, exported: now(), state }, null, 1); },
-    importJSON(text) {
+    /** Parse + validate a backup file without applying it. Throws on anything that is not a backup of this app. */
+    parseBackup(text) {
       const obj = JSON.parse(text);
       const s = obj && obj.state ? obj.state : obj;
-      if (!s || typeof s !== 'object' || typeof s.q !== 'object' || !s.profile) throw new Error('invalid backup file');
-      state = migrate(s);
-      commit(true);
+      if (!isObj(s) || !isObj(s.q) || !isObj(s.profile)) throw new Error('invalid backup file');
+      return migrate(s);
     },
+    applyState(next) { state = next; commit(true); },
+    importJSON(text) { api.applyState(api.parseBackup(text)); },
     reset() { state = defaultState(); commit(true); },
   };
   return api;
@@ -149,8 +200,9 @@ export function createStore(storage, now = () => Date.now()) {
 /** Safe wrapper: localStorage may throw (private mode, blocked cookies) -> fall back to memory. */
 export function safeStorage() {
   try {
-    const k = '__t'; window.localStorage.setItem(k, '1'); window.localStorage.removeItem(k);
-    return window.localStorage;
+    // Read-only probe: a full or write-protected storage must still show the progress that is already saved.
+    const ls = window.localStorage; ls.getItem('__probe');
+    return ls;
   } catch (e) {
     const m = new Map();
     return { getItem: (k) => (m.has(k) ? m.get(k) : null), setItem: (k, v) => m.set(k, String(v)), removeItem: (k) => m.delete(k) };

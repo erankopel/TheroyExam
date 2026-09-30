@@ -1,5 +1,5 @@
 // Read-only question viewer (answer revealed) shown in a sheet; used from unit lists, search, review.
-import { h, icon, sheet } from '../ui.js';
+import { h, icon, sheet, add } from '../ui.js';
 import { D } from '../data.js';
 import { store } from '../ctx.js';
 import { questionCard } from '../quiz.js';
@@ -17,7 +17,7 @@ export function openQuestion(id, ids = [id]) {
         onFlag: () => store.toggleFlag(q.id), showTts: store.state.profile.tts,
       });
       const rec = store.rec(q.id);
-      body.append(card.el,
+      add(body, card.el,
         h('div', { class: 'browse-meta' },
           h('span', { class: `dot dot-${store.statusOf(q.id)}` }), STATUS_LABEL[store.statusOf(q.id)],
           rec ? h('span', { class: 'muted' }, ` · ${rec.r} נכון, ${rec.w} שגוי`) : null),

@@ -8,7 +8,7 @@ export function countStatus(ids) {
   for (const id of ids) {
     const st = store.statusOf(id);
     c[st]++;
-    if (st !== 'new' && store.isDue(id, today)) c.due++;
+    if (st !== 'new' && st !== 'weak' && store.isDue(id, today)) c.due++; // mistakes are counted as `weak`
   }
   c.seen = c.total - c.new;
   return c;

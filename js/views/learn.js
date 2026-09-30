@@ -42,13 +42,13 @@ function unitCard(u, n) {
       h('div', { class: 'uc-title' }, h('span', { class: 'uc-n' }, n), h('b', null, u.title), done ? h('span', { class: 'uc-done', 'aria-label': 'הושלמה' }, icon('check')) : null),
       h('small', { class: 'muted uc-blurb' }, u.blurb),
       statusBar(c, c.total),
-      h('div', { class: 'uc-meta' }, h('small', null, `${c.total} שאלות`), c.due ? h('small', { class: 'tag-due' }, `${c.due} לחזרה`) : c.new ? h('small', { class: 'muted' }, `${c.new} חדשות`) : null)));
+      h('div', { class: 'uc-meta' }, h('small', null, `${c.total} שאלות`), c.weak ? h('small', { class: 'tag-weak' }, `${c.weak === 1 ? 'טעות אחת' : `${c.weak} טעויות`}`) : c.due ? h('small', { class: 'tag-due' }, `${c.due} לחזרה מרווחת`) : c.new ? h('small', { class: 'muted' }, `${c.new} חדשות`) : null)));
 }
 
 // ---------------------------------------------------------------------------------
 export function unitView({ key }) {
   const u = D.unitByKey.get(key);
-  if (!u) { queueMicrotask(() => go('/learn')); return { el: h('div') }; }
+  if (!u) { queueMicrotask(() => go('/learn', true)); return { el: h('div') }; }
   const lic = licOf(), cat = CATS[u.cat];
   const ids = unitIdsForLic(u, lic);
   const c = unitCounts(u);
@@ -60,7 +60,7 @@ export function unitView({ key }) {
   const paintList = () => {
     clear(list); clear(ftabs);
     const f = { all: () => true, weak: (id) => store.statusOf(id) === 'weak', new: (id) => store.statusOf(id) === 'new' };
-    [['all', `הכל (${ids.length})`], ['weak', `לחזרה (${c.weak})`], ['new', `חדשות (${c.new})`]].forEach(([k, t]) =>
+    [['all', `הכל (${ids.length})`], ['weak', `טעויות (${c.weak})`], ['new', `חדשות (${c.new})`]].forEach(([k, t]) =>
       ftabs.append(h('button', { class: filter === k ? 'on' : '', onclick: () => { filter = k; paintList(); } }, t)));
     const shown = ids.filter(f[filter]);
     if (!shown.length) list.append(h('p', { class: 'muted center' }, 'אין שאלות בסינון הזה'));
@@ -77,7 +77,7 @@ export function unitView({ key }) {
         statusBar(c, c.total),
         h('div', { class: 'chips' }, h('span', { class: 'chip' }, `יחידה ${idx + 1} מתוך ${siblings.length}`), h('span', { class: 'chip' }, `${ids.length} שאלות`), c.total ? h('span', { class: 'chip tone-good' }, `${Math.round((c.strong / c.total) * 100)}% שליטה`) : null))),
     h('div', { class: 'statusline card' },
-      stat('strong', c.strong, 'בשליטה'), stat('learning', c.learning, 'בלמידה'), stat('weak', c.weak, 'לחזרה'), stat('new', c.new, 'חדשות')),
+      stat('strong', c.strong, 'בשליטה'), stat('learning', c.learning, 'בלמידה'), stat('weak', c.weak, 'טעויות'), stat('new', c.new, 'חדשות')),
     h('div', { class: 'row gap wrap actions' },
       h('button', { class: 'btn btn-lg btn-primary', onclick: () => startPractice({ title: u.title, ids, mode: 'smart', limit: 15, back: `/unit/${key}` }) }, icon('play'), c.seen ? 'המשך תרגול' : 'התחלת תרגול'),
       h('button', { class: 'btn btn-lg btn-ghost', onclick: () => startPractice({ title: u.title, ids, mode: 'seq', back: `/unit/${key}` }) }, icon('list'), 'כל היחידה לפי הסדר'),

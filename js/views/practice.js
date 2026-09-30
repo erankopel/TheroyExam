@@ -15,7 +15,9 @@ const OOPS = ['לא בדיוק', 'כמעט', 'עוד נחזור לזה', 'טעו
 export function practiceView() {
   const S = session.current;
   const root = h('section', { class: 'session' });
-  if (!S) { queueMicrotask(() => go('/learn')); return { el: root }; }
+  if (!S) { queueMicrotask(() => go('/learn', true)); return { el: root }; }
+  // Back/Forward (or a reload of the tab) can re-enter a session that already has answers: resume after the last answered question.
+  if (!S.done && S.results.length > S.i) { S.i = S.results.length; if (S.i >= S.queue.length) S.done = true; }
   let card = null, t0 = 0, answered = false, keyHandler = null;
 
   const bar = h('div', { class: 'session-fill' });
@@ -75,7 +77,7 @@ export function practiceView() {
         h('span', { class: 'fb-ic' }, icon(ok ? 'check' : 'x')),
         h('div', null,
           h('strong', null, ok ? PRAISE[S.results.length % PRAISE.length] : OOPS[S.results.length % OOPS.length]),
-          ok ? h('span', { class: 'fb-xp' }, `+${res.xp} נק׳`) : h('span', { class: 'fb-sub' }, 'התשובה הנכונה מסומנת בירוק'))),
+          ok ? h('span', { class: 'fb-xp' }, h('bdi', { dir: 'ltr' }, `+${res.xp}`), ' נק׳') : h('span', { class: 'fb-sub' }, 'התשובה הנכונה מסומנת בירוק'))),
       h('button', { class: 'btn btn-lg btn-primary fb-next', onclick: next, autofocus: true }, last ? 'לסיכום' : 'המשך', icon('next')));
     foot.querySelector('.fb-next').focus({ preventScroll: true });
     if (S.combo && S.combo % 5 === 0) confetti(0.6);
@@ -110,7 +112,7 @@ export function practiceView() {
         h('h2', null, msg),
         h('div', { class: 'stat-row' },
           stat(`${uRight}/${uniq.length}`, 'תשובות נכונות'),
-          stat(`${S.xp}+`, 'נקודות'),
+          stat(h('bdi', { dir: 'ltr' }, `+${S.xp}`), 'נקודות'),
           stat(fmtDuration((Date.now() - S.startedAt) / 1000), 'זמן')),
         wrongIds.length ? h('div', { class: 'wrong-list' },
           h('h3', null, wrongIds.length === 1 ? 'שאלה אחת לחזרה' : `${wrongIds.length} שאלות לחזרה`),

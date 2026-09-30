@@ -26,20 +26,30 @@ function binomTailAtLeast(n, p, k) {
 }
 
 /**
- * @param ids   question ids relevant for the learner's license class
- * @param recs  map id -> record from the store
+ * @param ids    question ids relevant for the learner's license class
+ * @param recs   map id -> record from the store
+ * @param exams  finished mock exams of this license (optional). Full (random) mock exams are the best evidence of how a
+ *               random real exam will go, so they are blended into the per-question model.
  */
-export function estimate(ids, recs, today) {
+export function estimate(ids, recs, today, exams = []) {
   const { questions: n, passScore } = APP.exam;
-  if (!ids.length) return { pAvg: 0, expected: 0, pass: 0, seen: 0, total: 0, mastered: 0 };
+  if (!ids.length) return { pAvg: 0, expected: 0, pass: 0, seen: 0, total: 0, mastered: 0, mocks: 0, mockAvg: null };
   let sum = 0, seen = 0, mastered = 0;
   for (const id of ids) {
     const r = recs[id];
     if (r) { seen++; if (r.l === 1 && r.b >= 3) mastered++; }
     sum += pCorrect(r, today);
   }
-  const pAvg = sum / ids.length;
-  return { pAvg, expected: pAvg * n, pass: binomTailAtLeast(n, pAvg, passScore), seen, total: ids.length, mastered };
+  let pAvg = sum / ids.length;
+  const mocks = exams.filter((e) => e.kind !== 'focus' && e.total > 0).slice(-5);
+  let mockAvg = null;
+  if (mocks.length) {
+    const c = mocks.reduce((s, e) => s + e.correct, 0), t = mocks.reduce((s, e) => s + e.total, 0);
+    const w = Math.min(0.9, 0.3 * mocks.length); // one mock is noisy, three or more dominate
+    pAvg = w * (c / t) + (1 - w) * pAvg;
+    mockAvg = (c / t) * n;
+  }
+  return { pAvg, expected: pAvg * n, pass: binomTailAtLeast(n, pAvg, passScore), seen, total: ids.length, mastered, mocks: mocks.length, mockAvg };
 }
 
 export function readinessLabel(pass) {

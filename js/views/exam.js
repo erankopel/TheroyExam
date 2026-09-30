@@ -1,5 +1,5 @@
 // Mock theory exam: intro, run (timer, navigation, flagging) and result review.
-import { h, icon, clear, sheet, confirmDialog, fmtTime, fmtDuration, shuffle, toast } from '../ui.js';
+import { h, icon, clear, sheet, confirmDialog, fmtTime, fmtDuration, shuffle, toast, countHe } from '../ui.js';
 import { D, idsForLic } from '../data.js';
 import { store, go } from '../ctx.js';
 import { APP, LICENSES, CATS, CAT_ORDER } from '../config.js';
@@ -85,7 +85,7 @@ export function examRunView() {
   const root = h('section', { class: 'session exam' });
   const E = store.state.activeExam;
   let card = null, timer = null, keyHandler = null, finished = false;
-  if (!E) { queueMicrotask(() => go('/exam')); return { el: root }; }
+  if (!E) { queueMicrotask(() => go('/exam', true)); return { el: root }; }
   if (Date.now() >= E.deadline) { queueMicrotask(() => finish(true)); return { el: root }; }
 
   const timeEl = h('span', { class: 'timer-t' }), timerBox = h('div', { class: 'timer', 'aria-label': 'זמן שנותר' }, icon('clock'), timeEl);
@@ -144,7 +144,7 @@ export function examRunView() {
           'aria-label': `שאלה ${i + 1}${E.picks[id] != null ? ', נענתה' : ''}${E.marks[id] ? ', מסומנת' : ''}`,
           onclick: () => { close(); go_(i); } }, i + 1))),
         h('div', { class: 'row gap end', style: { marginTop: '16px' } },
-          h('span', { class: 'muted grow' }, unanswered ? `${unanswered} שאלות עדיין ללא תשובה` : 'כל השאלות נענו'),
+          h('span', { class: 'muted grow' }, unanswered ? `${countHe(unanswered, 'שאלה אחת', 'שתי שאלות', 'שאלות')} עדיין ללא תשובה` : 'כל השאלות נענו'),
           h('button', { class: 'btn btn-primary', onclick: () => { close(); finish(false); } }, 'סיום מבחן')));
     }, { title: 'ניווט במבחן' });
   }
@@ -153,18 +153,19 @@ export function examRunView() {
     if (finished) return;
     if (!auto) {
       const un = E.ids.filter((id) => E.picks[id] == null).length;
-      const ok = await confirmDialog({ title: 'לסיים את המבחן?', text: un ? `נותרו ${un} שאלות ללא תשובה. שאלה ללא תשובה נחשבת כטעות.` : 'אחרי הסיום אי אפשר לשנות תשובות.', ok: 'סיום והצגת ציון', cancel: 'חזרה למבחן' });
-      if (!ok) return;
+      const ok = await confirmDialog({ title: 'לסיים את המבחן?', text: un ? `${un === 1 ? 'נותרה שאלה אחת' : un === 2 ? 'נותרו שתי שאלות' : `נותרו ${un} שאלות`} ללא תשובה. שאלה ללא תשובה נחשבת כטעות.` : 'אחרי הסיום אי אפשר לשנות תשובות.', ok: 'סיום והצגת ציון', cancel: 'חזרה למבחן' });
+      if (!ok || finished) return; // the timer may have ended the exam while the dialog was open
     }
     finished = true; clearInterval(timer); document.removeEventListener('keydown', keyHandler);
     const qs = E.ids.map((id) => { const q = D.byId.get(id), p = E.picks[id]; return [id, p == null ? -1 : p, p === q.c ? 1 : 0]; });
     const correct = qs.reduce((s, x) => s + x[2], 0);
     const secs = Math.min((E.mins || BASE_MIN) * 60, Math.round((Date.now() - E.start) / 1000));
     const result = { ts: Date.now(), lic: E.lic, kind: E.kind, total: E.ids.length, correct, secs, passed: correct >= PASS, qs };
-    qs.forEach(([id, p, ok]) => { if (p >= 0) store.recordAnswer(id, !!ok); });
+    const answered = qs.filter((x) => x[1] >= 0).length, per = answered ? Math.round((secs * 1000) / answered) : 0;
+    qs.forEach(([id, p, ok]) => { if (p >= 0) store.recordAnswer(id, !!ok, { ms: per }); });
     const idx = store.addExam(result);
     checkBadges(store, { exam: result });
-    go(`/exam/result/${idx}`);
+    go(`/exam/result/${idx}`, true);
   }
 
   keyHandler = (e) => {
@@ -181,7 +182,7 @@ export function examRunView() {
 // ---------------------------------------------------------------------------------
 export function examResultView({ idx }) {
   const e = store.state.exams[+idx];
-  if (!e) { queueMicrotask(() => go('/exam')); return { el: h('div') }; }
+  if (!e) { queueMicrotask(() => go('/exam', true)); return { el: h('div') }; }
   const wrong = e.qs.filter((x) => !x[2]);
   const missing = Math.max(0, PASS - e.correct);
   if (e.passed && +idx === store.state.exams.length - 1 && Date.now() - e.ts < 8000) confetti(1.4);
@@ -204,7 +205,9 @@ export function examResultView({ idx }) {
       ringSvg(e.correct / e.total, { size: 150, stroke: 13, label: `${e.correct}/${e.total}`, sub: 'תשובות נכונות', tone }),
       h('div', { class: 'result-text' },
         h('h1', null, e.passed ? 'עברתם את המבחן!' : 'עוד לא הפעם'),
-        h('p', null, e.passed ? (e.correct === e.total ? 'ציון מושלם. אין מה להוסיף.' : `עברתם בפער של ${e.correct - PASS + 1} תשובות מעל הסף. המשיכו לתרגל כדי לשמור על הרמה.`) : `חסרות ${missing} ${missing === 1 ? 'תשובה נכונה' : 'תשובות נכונות'} כדי להגיע ל־${PASS}. הטעויות למטה הן ההזדמנות ללמוד.`),
+        h('p', null, e.passed
+          ? (e.correct === e.total ? 'ציון מושלם. אין מה להוסיף.' : e.correct === PASS ? 'עברתם בדיוק על הסף. כדאי להמשיך לתרגל כדי לצבור ביטחון.' : `עברתם עם ${countHe(e.correct - PASS, 'תשובה אחת', 'שתי תשובות', 'תשובות')} מעל הסף. המשיכו לתרגל כדי לשמור על הרמה.`)
+          : `${missing === 1 ? 'חסרה תשובה נכונה אחת' : missing === 2 ? 'חסרות שתי תשובות נכונות' : `חסרות ${missing} תשובות נכונות`} כדי להגיע ל־${PASS}. הטעויות למטה הן ההזדמנות ללמוד.`),
         h('div', { class: 'chips' }, h('span', { class: 'chip' }, icon('clock'), fmtDuration(e.secs)), h('span', { class: 'chip' }, new Date(e.ts).toLocaleDateString('he-IL')), e.kind === 'focus' ? h('span', { class: 'chip' }, 'מבחן ממוקד') : null))),
     h('div', { class: 'card' }, h('h3', null, 'לפי נושא'),
       h('div', { class: 'cat-bars' }, CAT_ORDER.filter((c) => byCat[c]).map((c) => h('div', { class: 'cat-bar', style: { '--cc': CATS[c].color } },

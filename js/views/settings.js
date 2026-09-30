@@ -3,6 +3,7 @@ import { D } from '../data.js';
 import { store, applyProfile, go } from '../ctx.js';
 import { APP, LICENSES } from '../config.js';
 import { ttsSupported } from '../quiz.js';
+import { imagesReady, canCache, downloadAllImages } from '../offline.js';
 
 export function settingsView() {
   const p = () => store.state.profile;
@@ -19,19 +20,21 @@ export function settingsView() {
   paintLic();
 
   const fileIn = h('input', { type: 'file', accept: 'application/json,.json', hidden: true, onchange: async (e) => {
-    const f = e.target.files[0]; if (!f) return;
-    try { store.importJSON(await f.text()); applyProfile(); toast('הנתונים שוחזרו', { tone: 'good', icon: 'check' }); go('/'); }
-    catch (err) { toast('הקובץ אינו גיבוי תקין', { tone: 'bad' }); }
+    const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+    let next;
+    try { next = store.parseBackup(await f.text()); } catch (err) { return toast('הקובץ אינו גיבוי תקין', { tone: 'bad' }); }
+    const answered = Object.keys(next.q).length;
+    const ok = await confirmDialog({ title: 'לשחזר מגיבוי?', text: `ההתקדמות הנוכחית תוחלף בנתוני הקובץ (${answered} שאלות שנענו, ${next.xp} נקודות). אי אפשר לבטל.`, ok: 'שחזור', danger: true });
+    if (!ok) return;
+    store.applyState(next); applyProfile(); toast('הנתונים שוחזרו', { tone: 'good', icon: 'check' }); go('/');
   } });
 
-  const offlineStatus = h('div', { class: 'muted small' }), offlineBar = h('div', { class: 'dl-bar', hidden: true }, h('i'));
+  const offlineStatus = h('div', { class: 'muted small' }, imagesReady() ? '✅ התמונות שמורות במכשיר – האפליקציה עובדת גם ללא אינטרנט' : ''), offlineBar = h('div', { class: 'dl-bar', hidden: true }, h('i'));
   async function downloadAll() {
-    if (!('caches' in window) || !navigator.serviceWorker?.controller) return toast('מצב לא מקוון זמין לאחר טעינה שנייה של האתר', { tone: 'warn' });
-    const urls = [...new Set(D.questions.filter((q) => q.img).map((q) => `img/q/${q.img}`))];
-    offlineBar.hidden = false; let done = 0, fail = 0; const bar = offlineBar.firstChild;
-    const worker = async () => { while (urls.length) { const u = urls.pop(); try { const r = await fetch(u); if (!r.ok) fail++; } catch { fail++; } done++; bar.style.width = `${(done / (done + urls.length)) * 100}%`; offlineStatus.textContent = `הורדה… ${done} תמונות`; } };
-    await Promise.all(Array.from({ length: 6 }, worker));
-    offlineStatus.textContent = fail ? `הסתיים עם ${fail} תקלות – נסו שוב עם חיבור יציב` : `✅ הכל שמור במכשיר – האפליקציה עובדת גם ללא אינטרנט`;
+    if (!canCache()) return toast('מצב לא מקוון זמין לאחר טעינה שנייה של האתר', { tone: 'warn' });
+    offlineBar.hidden = false; const bar = offlineBar.firstChild;
+    const { fail } = await downloadAllImages((done, total) => { bar.style.width = `${(done / total) * 100}%`; offlineStatus.textContent = `הורדה… ${done} מתוך ${total} תמונות`; });
+    offlineStatus.textContent = fail ? `הסתיים עם ${fail} תקלות – נסו שוב עם חיבור יציב` : '✅ הכל שמור במכשיר – האפליקציה עובדת גם ללא אינטרנט';
     if (!fail) toast('האפליקציה מוכנה לשימוש ללא אינטרנט', { tone: 'good', icon: 'wifi' });
   }
 

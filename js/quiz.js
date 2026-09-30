@@ -40,9 +40,14 @@ export function questionCard(q, o) {
   const ttsBtn = st.showTts && ttsSupported() ? h('button', { class: 'btn btn-icon btn-ghost', 'aria-label': 'הקראה', onclick: () => speakQuestion(q, st.order) }, icon('speaker')) : null;
 
   const src = imgUrl(q);
-  const fig = src ? h('figure', { class: 'qimg' },
-    h('button', { class: 'qimg-btn', 'aria-label': 'הגדלת התמונה', onclick: () => sheet((b) => b.append(h('img', { class: 'qimg-big', src, alt: 'איור לשאלה' })), { title: 'איור לשאלה' }) },
-      h('img', { src, alt: 'איור לשאלה ' + q.id, decoding: 'async', width: 350, height: 230 }))) : null;
+  let fig = null;
+  if (src) {
+    // Offline and not cached: say so instead of showing a broken-image icon (the question cannot be answered without it).
+    const missing = () => fig.replaceChildren(h('div', { class: 'qimg-missing', role: 'note' }, icon('wifi'), h('span', null, 'התמונה אינה זמינה ללא חיבור לאינטרנט.'), h('a', { class: 'link', href: '#/settings' }, 'להורדת כל התמונות')));
+    fig = h('figure', { class: 'qimg' },
+      h('button', { class: 'qimg-btn', 'aria-label': 'הגדלת התמונה', onclick: () => sheet((b) => b.append(h('img', { class: 'qimg-big', src, alt: 'איור לשאלה' })), { title: 'איור לשאלה' }) },
+        h('img', { src, alt: 'איור לשאלה ' + q.id, decoding: 'async', width: 350, height: 230, onerror: missing })));
+  }
 
   const btns = st.order.map((oi, pos) => h('button', {
     class: 'answer', type: 'button', dataset: { i: oi, pos },
