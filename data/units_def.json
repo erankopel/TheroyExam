@@ -691,5 +691,403 @@
    1165,
    1170
   ]
+ },
+ {
+  "key": "signs-basics",
+  "cat": "signs",
+  "order": 1,
+  "title": "איך קוראים תמרור",
+  "blurb": "מה הצורות והצבעים של התמרורים אומרים, ומה המעמד החוקי שלהם.",
+  "emoji": "📘",
+  "iconBrief": "Flat icon of an open book with four small sign shapes (circle, triangle, square, octagon) floating above it, in red, blue and yellow.",
+  "definition": "Meta questions about the sign SYSTEM itself, not about one specific sign. Exactly these kinds: (a) purpose, shape and colour of sign classes: 401 purpose of an information sign, 477 circle = order or prohibition, 606 warning sign = triangle, 691 orange signs/markings = roadworks site, 310 why STOP and YIELD have special shapes; (b) legal status and general validity: 964 yellow-sign message is legal, 1022 mandatory-message sign that is not in the sign book, 1772 a road marking made by law counts as a sign, 1763 a portable sign held by a road-safety volunteer must be obeyed, 911 contradicting signs (impossible situation), 482 supplementary arrow plate limits the message to the arrow direction; (c) the zone-type prohibition sign 424 whose validity does not end at the next junction, and its end sign 425 (ids 396, 522). EXCLUDES any question about the meaning of, or behaviour at, one specific sign, even a validity question: parking-sign validity (524, 526, 584) goes to signs-parking, speed-sign validity (514) to signs-prohibitions, bike-lane validity (618) to signs-vulnerable, PT-lane validity (532) to signs-direction. 'Which sign comes before/after N' pair questions never go here; they follow the topic of the sign named in the stem.",
+  "estCount": 13,
+  "exampleIds": [
+   401,
+   477,
+   606,
+   310,
+   1772,
+   964,
+   396
+  ]
+ },
+ {
+  "key": "signs-warning-roadworks",
+  "cat": "signs",
+  "order": 2,
+  "title": "אזהרות ועבודות בדרך",
+  "blurb": "משולשי אזהרה על סכנות בכביש, ותמרורים וציוד באתרי עבודה.",
+  "emoji": "⚠️",
+  "iconBrief": "Flat icon of a red-bordered warning triangle with an exclamation mark, with a small orange traffic cone beside it.",
+  "definition": "Warning triangles about road hazards and conditions ('what danger is ahead and how do I adapt') plus everything about roadworks and temporary signalling. Hazards: bumpy road 101 and speed bumps 144 (356, 363, 407, 408, 484, 485) and the marking that follows sign 144 (362); curves right, S-curve, winding road (409-413); road narrowing (414, 415); steep descent including the 2,500 m sign (464, 465, 483, 1237); slippery road (466, 467); falling rocks (448); general danger (475, 476); congestion sign (439, 440); two-way traffic ahead (378, 381, 473, 474, 558); accident ahead (1803); tunnel warning and headlights in a tunnel (616, 1219, 1278); tractor or work vehicle crossing (486, 487). Roadworks: roadworks sign (416, 417, 686), cone (759), diagonal lane-shift arrow boards (670, 785), 'signs used only at work sites' (786), flashing message board (1711), portable STOP and GO signs (537, 538) and 'which sign comes before portable sign 305' (391). EXCLUDES: junction, merge and roundabout warnings (signs-junctions); traffic-light-ahead warning (signs-lights); stop-ahead warning (signs-priority); railway warnings (signs-railway); pedestrian, bicycle and animal warnings (signs-vulnerable); black-white obstacle and delineator markers 682, 683, 690 (signs-markings); the meaning of the orange colour 691 and the legal status of a portable sign held by a volunteer 1763 (signs-basics); the ban on tractors 574 (signs-prohibitions).",
+  "estCount": 47,
+  "exampleIds": [
+   407,
+   409,
+   464,
+   466,
+   484,
+   416,
+   759,
+   1219
+  ]
+ },
+ {
+  "key": "signs-prohibitions",
+  "cat": "signs",
+  "order": 3,
+  "title": "איסורים והגבלות",
+  "blurb": "תמרורי איסור עגולים: כניסה אסורה, עקיפה אסורה, הגבלות מהירות ותוקפם.",
+  "emoji": "🚫",
+  "iconBrief": "Flat icon of a red circular no-entry sign with a white horizontal bar.",
+  "definition": "Red-circle prohibition and restriction signs and their end-of-zone signs that concern ordinary (B-visible) motor traffic. Includes: road closed to all vehicles, both directions (490, 604) and its 'sign at the other end' (397); no entry for all vehicles on a one-way road with traffic coming toward you (491); motor-vehicle and motorcycle bans and the case questions about them, including 506 (bicycle may enter a no-motor-vehicles road) and 1053 (498, 501, 502, 503, 505, 497, 1053, 506); ban on tractors and work vehicles (574); vehicle used for driving lessons ban, its validity and end (528, 529, 530); height limit and width limit signs that are B-tagged (418, 509); no-overtaking signs and the end of the no-overtaking section (386, 493, 500, 610); special speed limit signs, their validity and their end sign (153, 385, 512, 514). EXCLUDES: turn and U-turn bans (signs-direction); one-way wrong-way no-entry sign 402 (signs-direction); stop and park bans (signs-parking); bans on bicycles, pedestrians and animals (signs-vulnerable, ids 575, 576, 578, 1535); bans on bicycles and pedestrians on a motorway or motor-only road (563, 567, signs-roads-info); no overtaking tied to a railway crossing (394, 455, signs-railway); the PT lane sign 531 and its validity 532 (signs-direction); any question whose lic tag lacks B, such as weight limits, hazmat, customs, heavy-truck overtaking and end of speed zone tagged C1,C,D (signs-special-vehicles).",
+  "estCount": 26,
+  "exampleIds": [
+   490,
+   386,
+   497,
+   528,
+   153,
+   418,
+   574
+  ]
+ },
+ {
+  "key": "signs-direction",
+  "cat": "signs",
+  "order": 4,
+  "title": "כיוון נסיעה ופניות",
+  "blurb": "תמרורי הוראה כחולים: סע ישר, פנה, עבור מצד מסוים, פניות פרסה, כבישים חד-סטריים ונתיבי תחבורה ציבורית.",
+  "emoji": "➡️",
+  "iconBrief": "Flat icon of a round blue sign with a bold white arrow bending to the right.",
+  "definition": "Mandatory direction and lane-instruction signs, turn permissions and bans, one-way streets and public-transport privileges. Includes: go straight only, turn right or left only, turn right or left allowed, turn before or after the sign, U-turn permitted by the go-left or go-right sign (539-547, 549); pass the marked place on the left, right or either side (382, 552, 555) and the yellow-arrow variant allowing public transport to pass on the left (513, 554); turn and U-turn bans and U-turn permission (380, 395, 492, 494, 523, 1467); one-way street entry sign, its left-turn rule and the wrong-way no-entry sign at the other end (373, 590, 591); oncoming traffic allowed only for public transport shown by a yellow arrow (560, 561, 592); overhead lane-designation and junction-approach boards with arrows (607, 684, 965, 966); PT, taxi and shared-ride lane sign and its validity (531, 532). EXCLUDES: painted pavement arrows and painted PT lane (signs-markings); roundabout give-way and pass-on-the-right signs (signs-junctions); general no-entry, closed-road and overtaking bans (signs-prohibitions); lane-count-change info signs 358, 504, 622, 623 (signs-roads-info); overhead lane-open and lane-closed signals 675-679 (signs-lights); roadworks lane-shift arrows 670, 785 (signs-warning-roadworks); bus or taxi lane questions tagged D only, ids 1259-1261 and 1269-1272 (signs-special-vehicles).",
+  "estCount": 33,
+  "exampleIds": [
+   545,
+   539,
+   380,
+   523,
+   590,
+   560,
+   965,
+   531
+  ]
+ },
+ {
+  "key": "signs-roads-info",
+  "cat": "signs",
+  "order": 5,
+  "title": "סוגי דרכים ושלטי מידע",
+  "blurb": "דרך מהירה, אזור עירוני, רחוב משולב, שלטי הכוונה ותמרורי שירותים.",
+  "emoji": "🗺️",
+  "iconBrief": "Flat icon of a blue rectangular information sign with a white road symbol and a small green direction sign beneath it.",
+  "definition": "Road-type and zone signs plus information, guidance and service signs. Includes: expressway start, end, number and its minimum-speed companion sign (566, 568, 605, 1348, 383, 960); main road number and type (961, 1073); motor-only road, minimum-speed road and who may not enter, including bicycles and pedestrians on a motorway (562, 563, 564, 565, 567); urban-area entry and exit with the 50 km/h default (519, 520, 521, 1036); shared street with 30 km/h and its end, traffic-calming zone and its end (628-632); destination and distance guidance signs, kilometre numbers, city-centre sign (1007, 1078, 1123, 1204, 1307, 1760); dead-end road signs (556, 586, 587); lane-count-increase and decrease signs (358, 504, 622, 623); service pictograms: first aid, hospital, fuel, youth hostel, camping, restaurant, cafe, EV charging, battery swap (598, 599, 600, 602, 603, 624, 625, 1801, 1802); bus stop versus light-rail stop sign (1390). EXCLUDES: special speed-limit signs (signs-prohibitions); one-way street signs (signs-direction); parking and taxi signs, including park-and-ride 548 (signs-parking); general bicycle or pedestrian bans not tied to a motorway (signs-vulnerable); the tunnel sign (signs-warning-roadworks).",
+  "estCount": 45,
+  "exampleIds": [
+   566,
+   519,
+   628,
+   631,
+   599,
+   622,
+   1078,
+   562
+  ]
+ },
+ {
+  "key": "signs-priority",
+  "cat": "signs",
+  "order": 6,
+  "title": "עצור ותן זכות קדימה",
+  "blurb": "תמרור עצור, תן זכות קדימה, כביש עם זכות קדימה ודרך צרה.",
+  "emoji": "🛑",
+  "iconBrief": "Flat icon of a red octagonal stop sign next to a red-bordered downward-pointing give-way triangle.",
+  "definition": "Right-of-way signs: who goes first. Includes: the STOP sign, what it requires and where to stop, at the stop line or where cross traffic is visible (181-184, 355, 404, 535); STOP sign placed only on the left side, or on the right of a one-way two-lane road, and who must obey it (536, 957, 1761); the YIELD sign (403, 443, 533, 534); the stop-ahead warning 139 and the sign placed after it (461, 462, 463, 377); priority road, its start and its end (595, 596, 597); narrow-road priority signs 307 and 308, who yields, the sign at the opposite end, and situations at the narrow section (390, 495, 496, 579, 588, 589, 788, 976). EXCLUDES: roundabout give-way sign 303 and merge yield situations, ids 180 and 434-438 (signs-junctions); junction warning triangles that do not grant right of way (signs-junctions); the give-way-to-pedestrians crossing sign 593, 594 (signs-vulnerable); railway stop rules (signs-railway); portable STOP and GO signs 537, 538, 391 (signs-warning-roadworks); the painted stop line 647, 648 (signs-markings); stopping at a red light 693 (signs-lights); why STOP and YIELD look special 310 (signs-basics).",
+  "estCount": 29,
+  "exampleIds": [
+   181,
+   184,
+   403,
+   443,
+   495,
+   595,
+   536,
+   461
+  ]
+ },
+ {
+  "key": "signs-junctions",
+  "cat": "signs",
+  "order": 7,
+  "title": "צמתים ומעגלי תנועה",
+  "blurb": "אזהרות לפני צומת, התמזגות ומעגל תנועה, ומה הן אומרות על זכות קדימה.",
+  "emoji": "🔄",
+  "iconBrief": "Flat top-down icon of a roundabout ring with three arrows curving around it.",
+  "definition": "Junction, merge and roundabout signs. Includes: warning signs for crossroads, T-junction, branch to the right or left, staggered branch and 'branch right then left' (420-423, 426-428, 685, 365), and the fact that these junction warnings do NOT themselves decide right of way (421, 422, 424, 425, 429); where the junction warning is placed (427); 'which sign is placed before junction sign 118' (360); roundabout-ahead warning and how to react (430, 431); roundabout give-way sign 303 and 'give way to traffic in the circle and pass on the right' (387, 550, 551, 553) and 'which warning sometimes precedes 303' (369); merge warnings from the right or left, who yields and the sign at the road you merge into (361, 370, 434-438), and the merge-from-left picture question 180. EXCLUDES: STOP, YIELD, priority-road and narrow-road signs (signs-priority); traffic-light-ahead warning 122, 367, 432, 433 (signs-lights); mandatory direction and lane boards (signs-direction); railway crossings (signs-railway); destination guidance boards (signs-roads-info).",
+  "estCount": 28,
+  "exampleIds": [
+   420,
+   423,
+   430,
+   434,
+   436,
+   685,
+   550,
+   361
+  ]
+ },
+ {
+  "key": "signs-lights",
+  "cat": "signs",
+  "order": 8,
+  "title": "רמזורים",
+  "blurb": "משמעות האורות ברמזור, החצים, ההבהובים, איפה עוצרים באדום ואיתותי נתיב.",
+  "emoji": "🚦",
+  "iconBrief": "Flat icon of a vertical traffic light showing red, yellow and green lamps.",
+  "definition": "Traffic lights and signal heads for ordinary traffic. Includes: red, red-yellow (get ready), steady yellow (red is coming), green and green arrow (608, 664-669, 1750); flashing green and how many flashes (93, 518, 1787); flashing yellow at a junction or with pedestrians (186, 246, 668, 672); where to stop at a red light, stop line or else before the crosswalk (693); the order of light faces such as 'which follows 705 or 701' (405, 406); the traffic-lights-ahead warning sign and how to react (122, 367, 432, 433); overhead lane-control signals, green arrow = lane open, red X = lane closed (675-679). EXCLUDES: flashing red lights and barriers at railway crossings 673, 674, 680, 681, 1387 (signs-railway); mandatory lane boards with blue arrows (signs-direction); the painted stop line 647, 648 (signs-markings); light-rail and bus signal heads 708-716 and their sequences, tagged D only (signs-special-vehicles).",
+  "estCount": 25,
+  "exampleIds": [
+   93,
+   664,
+   667,
+   669,
+   672,
+   1750,
+   675,
+   432
+  ]
+ },
+ {
+  "key": "signs-parking",
+  "cat": "signs",
+  "order": 9,
+  "title": "עצירה וחנייה",
+  "blurb": "מתי מותר ואסור לעצור ולחנות, תחנות מוניות, חנייה לנכים ותוקף התמרורים.",
+  "emoji": "🅿️",
+  "iconBrief": "Flat icon of a blue square parking sign with a white letter P.",
+  "definition": "Vertical signs about stopping, standing and parking, for B-visible vehicles. Includes: no-stopping and no-parking signs, what they mean, their validity and end, and the sign placed for a stop-and-park ban (15, 393, 524, 525, 526); parking-permitted sign, its validity and end of the permitted place (527, 583, 584, 1519); parking not parallel to the kerb (402); parking on the sidewalk permitted for private cars (400, 627) and the private minibus 2,700 kg sidewalk question 1267; park-and-ride (548); disabled parking (621); taxi station sign, what other vehicles may do there, taxi drop-off-only spot, and the end of the taxi station (215, 349, 569-573, 1382); soldier pick-up station (585); parking at a bus stop on Shabbat and holidays (1403). EXCLUDES: painted kerb colours, painted no-parking marking and painted parking or stopping bays, ids 609, 657, 658, 659, 661, 662, 663 (signs-markings); any taxi, bus or truck parking question whose lic tag lacks B, ids 1257, 1258, 1262-1266, 1268, 694, 695, 1276 (signs-special-vehicles); 'validity' of a non-parking sign (signs-basics or the topical unit).",
+  "estCount": 25,
+  "exampleIds": [
+   15,
+   525,
+   527,
+   583,
+   621,
+   627,
+   569,
+   1267
+  ]
+ },
+ {
+  "key": "signs-markings",
+  "cat": "signs",
+  "order": 10,
+  "title": "קווים וסימונים בכביש",
+  "blurb": "קו רצוף, קו קטעים, קו כפול, חצים, קו עצירה, איים ואבני שפה צבועות.",
+  "emoji": "🛣️",
+  "iconBrief": "Flat top-down icon of an asphalt road with a dashed white centre line and a solid line beside it.",
+  "definition": "Everything painted on the road or kerb, plus roadside black-white delineators. Rule: paint means markings, a vertical sign goes to its topical unit. Includes: what solid, dashed and double centre lines allow or forbid and when you may cross them (447, 557, 636, 637, 639-642, 1561); lane and centre line (634); yellow edge line (643); painted lane-designation changes and lane arrows, including the yellow PT arrow (644, 645, 646, 651, 652); the painted PT lane (633); stop line (647, 648); traffic islands and the ban on driving over a separation area (656, 1776); painted kerb colours blue-white, red-white and red-yellow (609, 657, 658); painted no-parking marking and painted parking or stopping bays (659, 661, 662, 663); black-white roadside markings of sidewalks, islands or a narrow point or obstacle, and guide posts (682, 683, 690). EXCLUDES: pedestrian and bicycle crossing paint and 'how is a crossing marked' (635, 649, 1769) which go to signs-vulnerable; vertical signs on the same topic; the orange colour of roadworks markings 691 (signs-basics); the warning triangle for speed bumps and 'which marking follows sign 144' 362 (signs-warning-roadworks).",
+  "estCount": 31,
+  "exampleIds": [
+   636,
+   640,
+   647,
+   651,
+   657,
+   609,
+   633,
+   682
+  ]
+ },
+ {
+  "key": "signs-vulnerable",
+  "cat": "signs",
+  "order": 11,
+  "title": "הולכי רגל, אופניים וחיות",
+  "blurb": "מעבר חצייה, שבילי אופניים, הולכי רגל ובעלי חיים: אזהרות, איסורים וסימונים.",
+  "emoji": "🚸",
+  "iconBrief": "Flat icon of a pedestrian and a cyclist side by side on a zebra crossing.",
+  "definition": "Signs and markings about pedestrians, cyclists and animals. Includes: pedestrian-crossing warning 135 and the crossing-place sign 306, and sequence questions about them (368, 375, 376, 384, 468, 469, 470, 1570); pedestrians nearby (471, 472); painted pedestrian and bicycle crossing markings and 'how a crossing is marked' (635, 649, 1769); give way to pedestrians at a marked crossing (593, 594); bicycle warnings (419, 488, 489); bicycle path, mixed pedestrian-bicycle path, separate paths, one-way bicycle lane, and its validity (577, 580, 581, 617, 618, 638, 1572); bans on bicycles, pedestrians and animal-drawn carts or animals, and the permitting counterparts (575, 576, 578, 1477, 1507, 1535); animal warning versus animal ban (1556, 1569). EXCLUDES: bicycles and pedestrians on a motorway or motor-only road (563, 567, signs-roads-info); the no-motor-vehicle sign question about bicycles 506 (signs-prohibitions); tractor and work-vehicle crossing (486, 487, signs-warning-roadworks); pedestrian-related traffic-light behaviour such as flashing yellow with pedestrians 672 (signs-lights); one-way street sign (signs-direction).",
+  "estCount": 33,
+  "exampleIds": [
+   468,
+   593,
+   419,
+   577,
+   649,
+   1535,
+   1556,
+   375
+  ]
+ },
+ {
+  "key": "signs-railway",
+  "cat": "signs",
+  "order": 12,
+  "title": "רכבת ומסילות",
+  "blurb": "התקרבות למפגש מסילת ברזל, מחסומים, אורות מהבהבים ואיך חוצים את המסילה.",
+  "emoji": "🚆",
+  "iconBrief": "Flat icon of a railway crossing: a red-white barrier arm lowered across the road with a crossbuck sign.",
+  "definition": "Everything about railway and light-rail crossings for ordinary traffic. Includes: distance warning signs at about 300, 200 and 100 m and the last warning before the crossing (371, 372, 449-454); crossing signs for one track and for more than one track, and their rules (374, 441, 442, 456-460); no overtaking from the sign until after the crossing (394, 455); the rule to cross in one continuous drive without stopping on the tracks (458, 460); local-train and light-rail crossing warning and behaviour (445, 446); barrier sign, behaviour when the barrier is down, and 'which sign means barrier before a railway crossing' (680, 681, 1387); red flashing lights at a crossing (673, 674); sign sequence ending with a crossing after a left turn (912). EXCLUDES: ordinary traffic lights (signs-lights); the bus-stop versus light-rail-stop information sign 1390 (signs-roads-info); light-rail signal heads 708-716 and their sequences 650, 1638, 1729, 1731, tagged D only (signs-special-vehicles); general warning triangles (signs-warning-roadworks).",
+  "estCount": 26,
+  "exampleIds": [
+   441,
+   449,
+   456,
+   458,
+   673,
+   680,
+   912,
+   455
+  ]
+ },
+ {
+  "key": "signs-special-vehicles",
+  "cat": "signs",
+  "order": 13,
+  "title": "משאיות, אוטובוסים ומוניות",
+  "blurb": "תמרורים לרכב כבד ולתחבורה ציבורית, רלוונטי לרישיון C ו-D (מי שלומד B יכול לדלג).",
+  "emoji": "🚌",
+  "iconBrief": "Flat icon of a yellow city bus beside a small taxi and a delivery truck, side view.",
+  "definition": "MECHANICAL RULE: every question whose lic tag does NOT contain the letter B goes here, and nothing else does. That is exactly 30 ids: 359, 499, 507, 508, 510, 511, 515, 582, 650, 694, 695, 1257-1266, 1268-1272, 1276, 1638, 1729, 1731. Topics: heavy commercial vehicle signs (height limit with load 359, 510; total-weight limits 507, 508; hazardous goods ban 582; customs stop 511; over 4,000 kg no overtaking 499; over 10,000 kg parking ban and its validity 694, 695, and the sign that does not ban it at night 1276; end of a special speed zone tagged C1,C,D 515); taxi and bus rules (taxi stop and drop-off in a no-stopping area 1257, bus for driving lessons 1258, PT lane for buses and taxis with or without passengers 1259-1261 and 1269-1272, taxi pick-up-only bay 1262, 1263, sidewalk-parking limits by vehicle weight 1264-1266, 1268); D-only light-rail and bus signal-head sequences 650, 1638, 1729, 1731. Any question whose lic tag contains B goes to its topical unit even if it mentions a taxi, bus or truck, for example 1267 (B,D) goes to signs-parking, 418 and 509 go to signs-prohibitions, 1403 goes to signs-parking.",
+  "estCount": 30,
+  "exampleIds": [
+   507,
+   582,
+   694,
+   1257,
+   1264,
+   1269,
+   1638,
+   359
+  ]
+ },
+ {
+  "key": "vehicle-engine-dashboard",
+  "cat": "vehicle",
+  "order": 1,
+  "title": "מנוע, הילוכים ולוח שעונים",
+  "blurb": "איך הרכב עובד מבפנים: מנוע, מצמד, תיבת הילוכים, נורות אזהרה בלוח השעונים והנווטן.",
+  "emoji": "🚗",
+  "iconBrief": "Flat icon of a car dashboard: a round speedometer gauge with a small glowing red warning light beside it, and a tiny gear-shift knob.",
+  "definition": "Basic knowledge of the drive-train and driver information. INCLUDES: starter (995); engine role and its help in emergencies (1016); clutch component/pedal/motorcycle clutch lever (1062, 1498, 1728); automatic gearbox operation - kick-down and P-to-D/R procedure (742, 743); the three control systems braking/steering/acceleration (1578); GPS/navigator - what it is and the distraction danger (1064, 1065); the instrument panel and every question whose SUBJECT is a dashboard indicator, warning light or gauge, even when the topic is brakes or oil: purpose of the panel (1052), brake warning light (935), oil-pressure light (1675), engine-temperature gauge/light and what to do (1079), parking-brake light on while driving (1562), blue high-beam indicator (1706), fuel gauge light that does not require stopping (1069), too-fast blinking of the turn-signal indicator on the dashboard (1020), and the definition of hazard lights (1485). EXCLUDED: how brakes/ABS work, brake overheating and brake FAULT handling with no dashboard light (999, 1055, 1629) go to vehicle-brakes-abs; hybrid vehicles (830, 886) and the manual-vs-automatic FUEL comparison (1290) go to vehicle-fuel-eco; physical bulbs, headlamp lens/aim, fuse, wipers, and 1019 (a lamp not lit - check bulb and fuse) go to vehicle-maintenance-checks; engine-oil level checks go to vehicle-maintenance-checks. Tie-breaker: if a dashboard light/gauge is named in the stem, it is this unit.",
+  "estCount": 19,
+  "exampleIds": [
+   1062,
+   742,
+   743,
+   935,
+   1675,
+   1706,
+   1079,
+   1065
+  ]
+ },
+ {
+  "key": "vehicle-brakes-abs",
+  "cat": "vehicle",
+  "order": 2,
+  "title": "בלמים ו-ABS",
+  "blurb": "איך הרכב עוצר: בלם רגל וחנייה, התחממות בלמים, בלימה במורד, נעילת גלגלים ומערכת ה-ABS.",
+  "emoji": "🛑",
+  "iconBrief": "Flat icon of a disc brake: a metal rotor disc with a red caliper clamped over it, with a small ABS badge.",
+  "definition": "Everything about how the vehicle brakes. INCLUDES: principle of braking - friction between disc and pads (986, has the disc-brake diagram); the parking/auxiliary (hand) brake role and its limits (689, 997, 1045, 1067); excessive braking, brake overheating - effects, symptoms, what to do (987, 989, 990, 991); long descents with engine braking/low gear (988, 1000); wheel lock and its consequences (993, 994); ABS purpose and behaviour incl. pedal vibration (992, 1001, 1702); checking the hydraulic brake system (996); brake-pad wear indicator on a motorcycle (1670); handling a brake FAULT with no dashboard light - stop immediately and tow (999, 1055, 1629 motorcycle foot brake). EXCLUDED: ESP / electronic stability control (1002, 1003, 1004, 1744) goes to vehicle-safety-systems; the brake WARNING LIGHT (935) and the parking-brake light on the dashboard (1562) go to vehicle-engine-dashboard; keeping distance to save fuel and brake wear (765) goes to vehicle-fuel-eco; brake-fluid level as part of routine fluid checks (1080, 1081) goes to vehicle-maintenance-checks. Tie-breaker: physical braking hardware, braking behaviour or ABS = this unit; a dashboard light in the stem = vehicle-engine-dashboard.",
+  "estCount": 21,
+  "exampleIds": [
+   986,
+   987,
+   988,
+   989,
+   991,
+   992,
+   999,
+   1702
+  ]
+ },
+ {
+  "key": "vehicle-safety-systems",
+  "cat": "vehicle",
+  "order": 3,
+  "title": "חגורות, כריות אוויר ו-ESP",
+  "blurb": "מה מגן עלינו בתאונה ומונע החלקה: חגורות, כריות אוויר, משענות ראש, פגושים ובקרת יציבות.",
+  "emoji": "💺",
+  "iconBrief": "Flat icon of a car seat with a fastened seatbelt across it and a partially inflated white airbag in front.",
+  "definition": "Passive and active safety equipment of the car. INCLUDES: which accessories reduce injury severity (696); seat belts - effect and misuse such as an over-reclined seat back (1691, 1012); airbags/SRS and their dependence on belts (1009, 1010, 1011); headrests and whiplash (1013, 1014); bumper integrity (1005); rigid protruding accessories in the cabin (1008); ESP electronic stability control - purpose, how it works, skid and rollover prevention (1002, 1003, 1004, 1744). EXCLUDED: ABS, wheel lock and all braking topics go to vehicle-brakes-abs; exhaust-fume leaks into the cabin and idling in a closed garage (1039, 1040) go to vehicle-fuel-eco; fire-extinguisher replacement (1037) goes to vehicle-maintenance-checks; the LEGAL duty to wear belts, child seats and passenger rules belong to the traffic-law categories, not this one; the engine's role in emergencies (1016) goes to vehicle-engine-dashboard. Tie-breaker: equipment that protects occupants in a crash, or ESP = this unit.",
+  "estCount": 14,
+  "exampleIds": [
+   696,
+   1009,
+   1011,
+   1013,
+   1002,
+   1003,
+   1004,
+   1744
+  ]
+ },
+ {
+  "key": "vehicle-tires-wheels",
+  "cat": "vehicle",
+  "order": 4,
+  "title": "צמיגים וגלגלים",
+  "blurb": "לחץ אוויר, מידת צמיג, גיל וחריצי הצמיג, ואיך מחליפים גלגל בבטחה.",
+  "emoji": "🛞",
+  "iconBrief": "Flat icon of a car tire in side view with visible tread grooves and a small pressure gauge beside it.",
+  "definition": "Tires and wheels - ANY question whose subject is a tire, tire pressure or a wheel, even if the answer mentions fuel or wear. INCLUDES: correct pressure - value, who defines it, where to find it (sticker, owner's manual), when to check it (cold), gauge (1024, 1025, 1028, 1038, 1018, 1051, 1068); effects of low/high pressure - wear, heat, stability, pulling to one side, fuel and pollution (1026, 1027, 1029, 1030, 1047, 1049, 1017); allowed tire size and approval to change it, same size on one axle (688, 1031, 1032, 1035); uneven front-tire wear caused by steering (1048); tire manufacture date and age when buying new/used (1468, 1656, 1673); tread grooves and water drainage (1708, has the tread photo); wheel-change procedure - jack placement, immobilising the car, loosening nuts first, retightening after 50 km (1033, 1050, 1066, 1077, 1499). EXCLUDED: fuel-saving driving tips whose stem is about fuel (1288, 1041, 1287) go to vehicle-fuel-eco even if the answer mentions tire pressure; brake wear/overheating goes to vehicle-brakes-abs; checking tire pressure as one item in a general list of routine checks (1080) goes to vehicle-maintenance-checks. Tie-breaker: if the stem is about tires/wheels/pressure, it is this unit.",
+  "estCount": 28,
+  "exampleIds": [
+   688,
+   1018,
+   1026,
+   1031,
+   1047,
+   1050,
+   1708,
+   1656
+  ]
+ },
+ {
+  "key": "vehicle-maintenance-checks",
+  "cat": "vehicle",
+  "order": 5,
+  "title": "תחזוקה ובדיקות שוטפות",
+  "blurb": "מה הנהג בודק ומתי מטפלים ברכב: נוזלים, שמן, נורות, מגבים, מטף כיבוי וטסט.",
+  "emoji": "🔧",
+  "iconBrief": "Flat icon of a wrench crossed with an oil dipstick, with a small light bulb, symbolizing routine checks.",
+  "definition": "Routine care and inspection of the vehicle. INCLUDES: preventive maintenance - what it is and how often (per manufacturer) (1057, 1058); who may repair safety defects - licensed garage only (1056); driver's routine checks (1080) and which fluids to check (1081); engine-oil check - when and how (1034, 1789); bulbs - choose per manufacturer, check bulb and fuse when a lamp is not lit (1021, 1019); headlamp lens broken or headlights misaimed (1023, 1694); faulty wipers (1015); replacing the fire extinguisher (1037); the annual roadworthiness test odometer record (1778); periodic servicing of a motorcycle (1621, lic A only). EXCLUDED: dashboard indicator/warning lights and hazard lights (1020, 1485, 935, 1675, 1079, 1562, 1706, 1069) go to vehicle-engine-dashboard; tire pressure, size and wheel change go to vehicle-tires-wheels; anything whose point is fuel consumption or exhaust pollution, including 1289 (maintenance lowers fuel use and wear), 1042 (maintenance reduces exhaust pollution) and 1046 (emissions test at the annual test), goes to vehicle-fuel-eco; brake-system function goes to vehicle-brakes-abs. Tie-breaker: physical parts a driver inspects or replaces (bulbs, wipers, oil, fluids, extinguisher) or who/how often to service = this unit.",
+  "estCount": 15,
+  "exampleIds": [
+   1057,
+   1058,
+   1056,
+   1080,
+   1081,
+   1034,
+   1019,
+   1694,
+   1037
+  ]
+ },
+ {
+  "key": "vehicle-fuel-eco",
+  "cat": "vehicle",
+  "order": 6,
+  "title": "חיסכון בדלק וגזי פליטה",
+  "blurb": "נהיגה חסכונית, רכב היברידי, זיהום אוויר ומה עושים עם גזי הפליטה.",
+  "emoji": "🌱",
+  "iconBrief": "Flat icon of a green leaf growing out of a fuel pump nozzle, symbolizing economical and clean driving.",
+  "definition": "Fuel economy and exhaust/environment topics: any question whose point is fuel consumption, fuel saving, exhaust gases or air pollution. INCLUDES: smooth driving and moderate speeds (1059, 1041, 1287, 1288 - even though 1288's answer mentions tire pressure); keeping distance saves fuel and wear (765); hybrid vehicle - definition and lower fuel use (830, 886); manual vs automatic gearbox fuel consumption (1290); regular maintenance reduces fuel use and wear (1289) and reduces exhaust pollution (1042); mandatory pollution test at the annual test (1046); exhaust-system leak sending burnt gases into the cabin (1039); not leaving the engine running in a closed garage (1040). EXCLUDED: tire-pressure questions whose stem is about tires, even when the answer is higher fuel use (1030) or tire life (1017), go to vehicle-tires-wheels; gearbox operation (kick-down, P/D) goes to vehicle-engine-dashboard; general maintenance schedule, oil/fluid checks, bulbs and the odometer record at the annual test (1778) go to vehicle-maintenance-checks; brake overheating from excessive braking (987) goes to vehicle-brakes-abs. Tie-breaker: fuel, exhaust or pollution in the stem or as the point of the answer = this unit, unless the stem's subject is a tire.",
+  "estCount": 13,
+  "exampleIds": [
+   765,
+   830,
+   886,
+   1041,
+   1042,
+   1046,
+   1287,
+   1039
+  ]
  }
 ]
