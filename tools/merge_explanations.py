@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Dev helper: merge explanation-workflow outputs into data/explanations.json ({id: {e, k}}) and lint them.
 
-Usage: merge_explanations.py [--meta META.json] out1.json [out2.json ...]
+Usage: merge_explanations.py [--strict] [--meta META.json] out1.json [out2.json ...]
   outN.json   a workflow output file ({"result": {"results": [{"recs": [...]}]}}, or the bare {"results": [...]})
   --meta      also write the audit metadata (basis, verdicts, unsure/doubt flags) for the records to this file
+  --strict    only keep records that finished every review stage: bank check done, law check done, and a final
+              read whenever the law reviewer rewrote the text or anyone marked it unsure (records still waiting for a stage are held back)
 
 Records that were removed by a verifier are left out. The lint (also used by validate_data.py) rejects explanations
 that would be wrong in the app: references to answer letters/positions (answers are shuffled), second-person masculine
@@ -33,9 +35,13 @@ def lint(text, q=None, field="e"):
         probs.append(f"too long ({words} words)")
     if not (q and q.get("ns")):
         for rx in LETTER_REFS:
-            m = rx.search(text)
-            if m:
+            for m in rx.finditer(text):
+                # a letter that the question itself uses as a label (e.g. "רחוב א'" in a junction picture) is fine
+                if q and m.group(0) in q.get("q", ""):
+                    continue
                 probs.append(f"refers to an answer position: '{m.group(0)}'")
+                break
+            if probs:
                 break
     m = MASC_SECOND_PERSON.search(text)
     if m:
@@ -47,13 +53,25 @@ def lint(text, q=None, field="e"):
     return probs
 
 
+def fully_reviewed(r):
+    """True when the record went through the bank check, the law check and (if the law reviewer rewrote it or it was marked unsure) the final read."""
+    ok = ("ok", "fix")
+    if r.get("v1") not in ok or r.get("v2") not in ok:
+        return False
+    needs_final = r["v2"] == "fix" or r.get("unsure")
+    return not needs_final or r.get("v3") in ok
+
+
 def main(argv):
     meta_out = None
+    strict = False
     files = []
     it = iter(argv)
     for a in it:
         if a == "--meta":
             meta_out = next(it)
+        elif a == "--strict":
+            strict = True
         else:
             files.append(a)
     qs = {q["id"]: q for q in json.loads((ROOT / "data/questions.json").read_text(encoding="utf-8"))}
@@ -64,7 +82,7 @@ def main(argv):
         for batch in res["results"]:
             for r in batch["recs"]:
                 recs[r["id"]] = r  # later files win
-    out, meta, bad, removed = {}, {}, [], 0
+    out, meta, bad, removed, held = {}, {}, [], 0, []
     for qid, r in sorted(recs.items()):
         q = qs.get(qid)
         if not q:
@@ -72,6 +90,8 @@ def main(argv):
         meta[qid] = {k: r.get(k) for k in ("basis", "v1", "v1why", "v2", "v2why", "unsure", "doubt", "doubtNote", "removed", "refs")}
         if r.get("removed"):
             removed += 1; continue
+        if strict and not fully_reviewed(r):
+            held.append(qid); continue
         probs = lint(r["e"], q, "e") + lint(r.get("k", ""), q, "k")
         if probs:
             bad.append((qid, "; ".join(probs))); continue
@@ -79,7 +99,7 @@ def main(argv):
     (ROOT / "data/explanations.json").write_text(json.dumps(out, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
     if meta_out:
         Path(meta_out).write_text(json.dumps(meta, ensure_ascii=False, indent=0), encoding="utf-8")
-    print(f"{len(out)} explanations written ({removed} removed by verifiers, {len(bad)} rejected by lint, {len(qs) - len(out) - len(bad) - removed} missing)")
+    print(f"{len(out)} explanations written ({removed} removed by verifiers, {len(bad)} rejected by lint, {len(held)} held back for missing review stages, {len(qs) - len(recs)} without any record)")
     for qid, why in bad[:60]:
         print(f"  lint #{qid}: {why}")
 
